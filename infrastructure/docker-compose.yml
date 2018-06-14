@@ -24,7 +24,7 @@ services:
     volumes:
      - postgres-volume:/var/lib/postgresql/data
     environment:
-      POSTGRES_PASSWORD: {--postgres_password--}
+     - POSTGRES_PASSWORD={--postgres_password--}
     command:
       - -c
       - max_prepared_transactions=100
@@ -58,10 +58,10 @@ services:
       - POSTGRES_ENV_POSTGRES_PASSWORD={--postgres_password--}
       - DB_VENDOR=postgres
       - DB_HOST=postgres
-      - TENANT_LOGIN={--bonita_tenant_login--} tech_user
-      - TENANT_PASSWORD={--bonita_tenant_password--}secret
-      - PLATFORM_LOGIN={--bonita_platform_login--} pfadmin
-      - PLATFORM_PASSWORD={--bonita_platform_password} pfsecret
+      - TENANT_LOGIN={--bonita_tenant_login--}
+      - TENANT_PASSWORD={--bonita_tenant_password--}
+      - PLATFORM_LOGIN={--bonita_platform_login--}
+      - PLATFORM_PASSWORD={--bonita_platform_password--}
       - HTTP_API=true
     depends_on:
       - postgres
@@ -73,13 +73,13 @@ services:
       - |
         set -e
         echo 'Waiting for Postgres to be available'
-        export PGPASSWORD="$$POSTGRES_ENV_POSTGRES_PASSWORD"
+        export PGPASSWORD="$POSTGRES_ENV_POSTGRES_PASSWORD"
         maxTries=10
-        while [ "$$maxTries" -gt 0 ] && ! psql -h "$$DB_HOST" -U 'postgres' -c '\l'; do
+        while [ "$maxTries" -gt 0 ] && ! psql -h "$DB_HOST" -U 'postgres' -c '\l'; do
             sleep 1
         done
         echo
-        if [ "$$maxTries" -le 0 ]; then
+        if [ "$maxTries" -le 0 ]; then
             echo >&2 'error: unable to contact Postgres after 10 tries'
             exit 1
         fi
