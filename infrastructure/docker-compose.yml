@@ -110,7 +110,7 @@ services:
     command: "npm start"
 
   alfresco:
-       image: "pdubois/docker-alfresco:master"
+       image: "pdubois/docker-alfresco"
        ports:
         - 8450:8443
        volumes:
