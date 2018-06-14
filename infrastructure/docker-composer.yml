@@ -1,0 +1,106 @@
+version: '3'
+
+volumes:
+  mongo-volume:
+    driver: local
+  formio-volume:
+    driver: local
+  bonita-volume:
+    driver: local
+  bonitad-volume:
+    driver: local
+  postgres-volume:
+    driver: local
+  sorl-volume:
+    driver: local
+  alf-share:
+    driver: local
+
+
+services:
+
+  postgres:
+    image: postgres
+    volumes:
+     - postgres-volume:/var/lib/postgresql/data
+
+  mongodb:
+    image: mongo
+    volumes:
+      - mongo-volume:/data/db
+
+  formio-api:
+    image: skarvelis/formio-api:1.0
+    ports:
+      - 3001:3001
+    environment:
+      - VIRTUAL_HOST={--formio_host--}
+      - REVERSE_PROXY=false
+      - DB_HOST=mongodb
+      - DB_NAME=formio
+      - ADMIN_EMAIL={--formio_admin_email--}
+      - ADMIN_PASS={--formio_admin_password--}
+    depends_on:
+      - mongodb
+    volumes:
+      - formio-volume:/app
+
+  bonita:
+    image: bonita
+    ports:
+      - 9090:8080
+    environment:
+      - POSTGRES_ENV_POSTGRES_PASSWORD=example
+      - DB_VENDOR=postgres
+      - DB_HOST=postgres
+      - TENANT_LOGIN=tech_user
+      - TENANT_PASSWORD=secret
+      - PLATFORM_LOGIN=pfadmin
+      - PLATFORM_PASSWORD=pfsecret
+      - HTTP_API=true
+    depends_on:
+      - postgres
+    volumes:
+      - bonita-volume:/opt/bonita
+    entrypoint:
+      - bash
+      - -c
+      - |
+        set -e
+        echo 'Waiting for Postgres to be available'
+        export PGPASSWORD="$$POSTGRES_ENV_POSTGRES_PASSWORD"
+        maxTries=10
+        while [ "$$maxTries" -gt 0 ] && ! psql -h "$$DB_HOST" -U 'postgres' -c '\l'; do
+            sleep 1
+        done
+        echo
+        if [ "$$maxTries" -le 0 ]; then
+            echo >&2 'error: unable to contact Postgres after 10 tries'
+            exit 1
+        fi
+        exec /opt/files/startup.sh
+
+  bonita-desktop:
+    image: dorowu/ubuntu-desktop-lxde-vnc
+    ports:
+      - 6080:80
+      - 5900:5900
+      - 10000:8080
+    environment: 
+      - VNC_PASSWORD={--bd_vnc_password--}
+      - USER={--bd_user--} 
+      - PASSWORD={--bd_password--}
+    volumes:
+      - bonitad-volume:/home/{--bd_user--}
+
+  node:
+    image: "node:9"
+    user: "node"
+    working_dir: /home/node/app
+    environment:
+      - NODE_ENV=production
+    volumes:
+      - ./obif/:/home/node/app
+    ports:
+      - 10631:10631
+    command: "npm start"
