@@ -1,2 +1,3 @@
 plain.cnf
 secrets/*
+!secrets/placeholder
