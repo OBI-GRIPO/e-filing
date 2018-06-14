@@ -1,0 +1,16 @@
+# Rename to plain.cfg after set the following secrets
+# if string contains % must replaced with %% (config parser use interpolation)
+[Secrets]
+formio_host: example.com
+formio_admin_email: admin@example.com
+formio_admin_password: strongpassword
+bd_vnc_password: strongpassword
+bd_user: bonita
+bd_email: bonita@example.com
+bd_password: strongpassword
+postgres_password: password
+bonita_tenant_login: tech_user
+bonita_tenant_password: secret
+bonita_platform_login: pfadmin
+bonita_platform_password: pfsecret
+

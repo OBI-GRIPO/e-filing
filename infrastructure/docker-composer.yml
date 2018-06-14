@@ -23,6 +23,11 @@ services:
     image: postgres
     volumes:
      - postgres-volume:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: {--postgres_password--}
+    command:
+      - -c
+      - max_prepared_transactions=100
 
   mongodb:
     image: mongo
@@ -50,13 +55,13 @@ services:
     ports:
       - 9090:8080
     environment:
-      - POSTGRES_ENV_POSTGRES_PASSWORD=example
+      - POSTGRES_ENV_POSTGRES_PASSWORD={--postgres_password--}
       - DB_VENDOR=postgres
       - DB_HOST=postgres
-      - TENANT_LOGIN=tech_user
-      - TENANT_PASSWORD=secret
-      - PLATFORM_LOGIN=pfadmin
-      - PLATFORM_PASSWORD=pfsecret
+      - TENANT_LOGIN={--bonita_tenant_login--} tech_user
+      - TENANT_PASSWORD={--bonita_tenant_password--}secret
+      - PLATFORM_LOGIN={--bonita_platform_login--} pfadmin
+      - PLATFORM_PASSWORD={--bonita_platform_password} pfsecret
       - HTTP_API=true
     depends_on:
       - postgres
