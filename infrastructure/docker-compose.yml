@@ -11,9 +11,7 @@ volumes:
     driver: local
   postgres-volume:
     driver: local
-  sorl-volume:
-    driver: local
-  alf-share:
+  alfresco-volume:
     driver: local
 
 
@@ -73,13 +71,14 @@ services:
       - |
         set -e
         echo 'Waiting for Postgres to be available'
-        export PGPASSWORD="$POSTGRES_ENV_POSTGRES_PASSWORD"
+        export PGPASSWORD="$$POSTGRES_ENV_POSTGRES_PASSWORD"
         maxTries=10
-        while [ "$maxTries" -gt 0 ] && ! psql -h "$DB_HOST" -U 'postgres' -c '\l'; do
+        while [ "$$maxTries" -gt 0 ] && ! psql -h "$$DB_HOST" -U 'postgres' -c '\l'; do
+            let maxTries--
             sleep 1
         done
         echo
-        if [ "$maxTries" -le 0 ]; then
+        if [ "$$maxTries" -le 0 ]; then
             echo >&2 'error: unable to contact Postgres after 10 tries'
             exit 1
         fi
@@ -99,7 +98,7 @@ services:
       - bonitad-volume:/home/{--bd_user--}
 
   node:
-    image: "node:9"
+    image: "node"
     user: "node"
     working_dir: /home/node/app
     environment:
@@ -109,3 +108,19 @@ services:
     ports:
       - 10631:10631
     command: "npm start"
+
+  alfresco:
+       image: "pdubois/docker-alfresco:master"
+       ports:
+        - 8450:8443
+       volumes:
+        - alfresco-volume:/opt/alfresco/alf_data
+       environment:
+        - INITIAL_PASS={--alfresco_password--}
+        - CONTAINER_FUNCTION=tomcat
+        - ALF_1=db.url.EQ.jdbc:postgresql:\/\/postgres:5432\/alfresco
+        - ALF_2=db.password.EQ.{--postgres_password--}  
+        - ALF_3=db.username.EQ.postgres
+        - DB_CONTAINER_NAME=postgres
+       depends_on:
+        - postgres

@@ -39,6 +39,7 @@ print(encode(key,config['Secrets']['bonita_tenant_login']),file=open("secrets/bo
 print(encode(key,config['Secrets']['bonita_tenant_password']),file=open("secrets/bonita_tenant_password","w"))
 print(encode(key,config['Secrets']['bonita_platform_login']),file=open("secrets/bonita_platform_login","w"))
 print(encode(key,config['Secrets']['bonita_platform_password']),file=open("secrets/bonita_platform_password","w"))
+print(encode(key,config['Secrets']['alfresco_password']),file=open("secrets/alfresco_password","w"))
 
 
 #print(decode(key,encode(key,api_dbpassword)))
