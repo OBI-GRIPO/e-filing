@@ -1,3 +1,4 @@
+.dev
 plain.cnf
 secrets/*
 !secrets/placeholder
