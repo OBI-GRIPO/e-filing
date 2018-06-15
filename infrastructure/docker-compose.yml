@@ -1,4 +1,4 @@
-version: '3'
+version: '3.6'
 
 volumes:
   mongo-volume:
@@ -11,12 +11,31 @@ volumes:
     driver: local
   postgres-volume:
     driver: local
-  alfresco-volume:
+  alfresco-data-volume:
     driver: local
-
+  alfresco-content-volume:
+    driver: local
+  vpn-volume:
+    driver: local
+    
+networks:
+  default:
+    ipam:
+      config:
+        - subnet: 172.255.0.0/16
 
 services:
 
+  vpn:
+    image: linuxserver/openvpn-as
+    volumes:
+      - vpn-volume:/config  
+    environment:  
+      - PGID
+      - PUID
+      - TZ
+      - INTERFACE
+      
   postgres:
     image: postgres
     volumes:
@@ -96,6 +115,9 @@ services:
       - PASSWORD={--bd_password--}
     volumes:
       - bonitad-volume:/home/{--bd_user--}
+    networks:
+         default:
+           ipv4_address: 172.255.255.254
 
   node:
     image: "node"
@@ -110,17 +132,14 @@ services:
     command: "npm start"
 
   alfresco:
-       image: "pdubois/docker-alfresco"
+       image: "gui81/alfresco:201707"
        ports:
-        - 8450:8443
+        - 8450:8080
        volumes:
-        - alfresco-volume:/opt/alfresco/alf_data
+        - alfresco-data-volume:/alfresco/alf_data
+        - alfresco-content-volume:/content
        environment:
-        - INITIAL_PASS={--alfresco_password--}
-        - CONTAINER_FUNCTION=tomcat
-        - ALF_1=db.url.EQ.jdbc:postgresql:\/\/postgres:5432\/alfresco
-        - ALF_2=db.password.EQ.{--postgres_password--}  
-        - ALF_3=db.username.EQ.postgres
-        - DB_CONTAINER_NAME=postgres
+        - DB_HOST=postgres 
+        - DB_PASSWORD={--postgres_password--}
        depends_on:
         - postgres
