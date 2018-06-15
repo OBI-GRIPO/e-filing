@@ -15,6 +15,8 @@ volumes:
     driver: local
   alfresco-content-volume:
     driver: local
+  alfresco-tomcat-logs:
+    driver: local
   vpn-volume:
     driver: local
     
@@ -37,11 +39,15 @@ services:
       - INTERFACE
       
   postgres:
-    image: postgres
+    image: postgres:9.4
     volumes:
      - postgres-volume:/var/lib/postgresql/data
+     - ${PWD}/assets/docker-entrypoint-initdb.d/:/docker-entrypoint-initdb.d
     environment:
      - POSTGRES_PASSWORD={--postgres_password--}
+     - ALFRESCO_DB=alfresco
+     - ALFRESCO_DB_USER=alfresco
+     - ALFRESCO_DB_USER_PASSWORD=alfresco
     command:
       - -c
       - max_prepared_transactions=100
@@ -138,8 +144,10 @@ services:
        volumes:
         - alfresco-data-volume:/alfresco/alf_data
         - alfresco-content-volume:/content
+        - alfresco-tomcat-logs:/alfresco/tomcat/logs
        environment:
-        - DB_HOST=postgres 
-        - DB_PASSWORD={--postgres_password--}
+        - DB_HOST=postgres
+        - DB_USERNAME=alfresco 
+        - DB_PASSWORD=alfresco
        depends_on:
         - postgres
