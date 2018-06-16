@@ -14,3 +14,5 @@ bonita_tenant_password: secret
 bonita_platform_login: pfadmin
 bonita_platform_password: pfsecret
 alfresco_password: admun
+alfresco_db_user: alfresco
+alfresco_db_password: alfresco

@@ -46,8 +46,8 @@ services:
     environment:
      - POSTGRES_PASSWORD={--postgres_password--}
      - ALFRESCO_DB=alfresco
-     - ALFRESCO_DB_USER=alfresco
-     - ALFRESCO_DB_USER_PASSWORD=alfresco
+     - ALFRESCO_DB_USER={--alfresco_db_user--}
+     - ALFRESCO_DB_USER_PASSWORD={--alfresco_db_password--}
     command:
       - -c
       - max_prepared_transactions=100
@@ -147,7 +147,7 @@ services:
         - alfresco-tomcat-logs:/alfresco/tomcat/logs
        environment:
         - DB_HOST=postgres
-        - DB_USERNAME=alfresco 
-        - DB_PASSWORD=alfresco
+        - DB_USERNAME={--alfresco_db_user--} 
+        - DB_PASSWORD={--alfresco_db_password--}
        depends_on:
         - postgres

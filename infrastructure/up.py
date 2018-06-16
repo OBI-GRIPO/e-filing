@@ -25,6 +25,8 @@ docker_compose = docker_compose.replace("{--bonita_tenant_password--}", decode(s
 docker_compose = docker_compose.replace("{--bonita_platform_login--}", decode(sys.argv[1],open("secrets/bonita_platform_login", "r").read()))
 docker_compose = docker_compose.replace("{--bonita_platform_password--}", decode(sys.argv[1],open("secrets/bonita_platform_password", "r").read()))
 docker_compose = docker_compose.replace("{--alfresco_password--}", decode(sys.argv[1],open("secrets/alfresco_password", "r").read()))
+docker_compose = docker_compose.replace("{--alfresco_db_password--}", decode(sys.argv[1],open("secrets/alfresco_db_password", "r").read()))
+docker_compose = docker_compose.replace("{--alfresco_db_user--}", decode(sys.argv[1],open("secrets/alfresco_db_user", "r").read()))
 
 
 print (docker_compose)
