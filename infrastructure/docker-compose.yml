@@ -17,32 +17,20 @@ volumes:
     driver: local
   alfresco-tomcat-logs:
     driver: local
-  vpn-volume:
-    driver: local
-    
+
 networks:
-  default:
-    ipam:
-      config:
-        - subnet: 172.255.0.0/16
+  obi_net:
+    external: true
 
 services:
 
-  vpn:
-    image: linuxserver/openvpn-as
-    volumes:
-      - vpn-volume:/config  
-    environment:  
-      - PGID
-      - PUID
-      - TZ
-      - INTERFACE
-      
   postgres:
     image: postgres:9.4
     volumes:
      - postgres-volume:/var/lib/postgresql/data
      - ${PWD}/assets/docker-entrypoint-initdb.d/:/docker-entrypoint-initdb.d
+    deploy:
+      replicas: 0
     environment:
      - POSTGRES_PASSWORD={--postgres_password--}
      - ALFRESCO_DB=alfresco
@@ -56,9 +44,15 @@ services:
     image: mongo
     volumes:
       - mongo-volume:/data/db
+    deploy:
+      replicas: 1
 
   formio-api:
     image: skarvelis/formio-api:1.0
+    build:
+      context: ${PWD}/vendors/dfio
+    networks:
+      - obi_net
     ports:
       - 3001:3001
     environment:
@@ -68,13 +62,18 @@ services:
       - DB_NAME=formio
       - ADMIN_EMAIL={--formio_admin_email--}
       - ADMIN_PASS={--formio_admin_password--}
+      - JWT_SECRET={--formio_jwt_secret--}
     depends_on:
       - mongodb
     volumes:
       - formio-volume:/app
-
+    deploy:
+      replicas: 1
+      
   bonita:
     image: bonita
+    networks:
+      - obi_net
     ports:
       - 9090:8080
     environment:
@@ -90,6 +89,8 @@ services:
       - postgres
     volumes:
       - bonita-volume:/opt/bonita
+    deploy:
+      replicas: 0
     entrypoint:
       - bash
       - -c
@@ -121,9 +122,8 @@ services:
       - PASSWORD={--bd_password--}
     volumes:
       - bonitad-volume:/home/{--bd_user--}
-    networks:
-         default:
-           ipv4_address: 172.255.255.254
+    deploy:
+      replicas: 1
 
   node:
     image: "node"
@@ -133,6 +133,8 @@ services:
       - NODE_ENV=production
     volumes:
       - ./obif/:/home/node/app
+    deploy:
+      replicas: 0
     ports:
       - 10631:10631
     command: "npm start"
@@ -145,6 +147,8 @@ services:
         - alfresco-data-volume:/alfresco/alf_data
         - alfresco-content-volume:/content
         - alfresco-tomcat-logs:/alfresco/tomcat/logs
+       deploy:
+         replicas: 0
        environment:
         - DB_HOST=postgres
         - DB_USERNAME={--alfresco_db_user--} 
