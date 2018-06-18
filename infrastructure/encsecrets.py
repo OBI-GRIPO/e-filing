@@ -31,6 +31,7 @@ print(encode(key,config['Secrets']['formio_host']),file=open("secrets/formio_hos
 print(encode(key,config['Secrets']['formio_admin_email']),file=open("secrets/formio_admin_email","w"))
 print(encode(key,config['Secrets']['formio_admin_password']),file=open("secrets/formio_admin_password","w"))
 print(encode(key,config['Secrets']['formio_jwt_secret']),file=open("secrets/formio_jwt_secret","w"))
+print(encode(key,config['Secrets']['formio_host']),file=open("secrets/formio_host","w"))
 print(encode(key,config['Secrets']['bd_vnc_password']),file=open("secrets/bd_vnc_password","w"))
 print(encode(key,config['Secrets']['bd_user']),file=open("secrets/bd_user","w"))
 print(encode(key,config['Secrets']['bd_email']),file=open("secrets/bd_email","w"))
