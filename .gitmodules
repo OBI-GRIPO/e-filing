@@ -1,6 +1,6 @@
 [submodule "infrastructure/vendors/dfio"]
 	path = infrastructure/vendors/dfio
 	url = https://github.com/sl45sms/dfio.git
-[submodule "infrastructure/vendors/wso2"]
-	path = infrastructure/vendors/wso2
-	url = https://github.com/wso2/docker-is.git
+[submodule "infrastructure/vendors/swso2"]
+	path = infrastructure/vendors/swso2
+	url = https://github.com/sl45sms/swso2.git
