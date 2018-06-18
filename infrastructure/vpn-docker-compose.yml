@@ -13,8 +13,6 @@ services:
     cap_add:
      - NET_ADMIN
     image: kylemanna/openvpn
-    deploy:
-      replicas: 1
     networks:
       - obi_net
     ports:

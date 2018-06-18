@@ -9,8 +9,6 @@ services:
     cap_add:
      - NET_ADMIN  
     image: andyshinn/dnsmasq:2.78
-    deploy:
-      replicas: 1
     networks:
       - obi_net
     entrypoint:
