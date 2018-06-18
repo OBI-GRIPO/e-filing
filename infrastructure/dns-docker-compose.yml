@@ -1,0 +1,22 @@
+version: '3.6'
+   
+networks:
+  obi_net:
+    external: true
+
+services:
+  dns:
+    cap_add:
+     - NET_ADMIN  
+    image: andyshinn/dnsmasq:2.78
+    deploy:
+      replicas: 1
+    networks:
+      - obi_net
+    entrypoint:
+      - sh
+      - -c
+      - |
+        set -e
+        ip addr add 10.6.3.254/32 dev eth0
+        exec dnsmasq -k
