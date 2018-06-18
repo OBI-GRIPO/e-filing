@@ -26,11 +26,13 @@ services:
 
   postgres:
     image: postgres:9.4
+    networks:
+      - obi_net
     volumes:
      - postgres-volume:/var/lib/postgresql/data
      - ${PWD}/assets/docker-entrypoint-initdb.d/:/docker-entrypoint-initdb.d
     deploy:
-      replicas: 0
+      replicas: 1
     environment:
      - POSTGRES_PASSWORD={--postgres_password--}
      - ALFRESCO_DB=alfresco
@@ -42,6 +44,8 @@ services:
 
   mongodb:
     image: mongo
+    networks:
+      - obi_net
     volumes:
       - mongo-volume:/data/db
     deploy:
@@ -55,9 +59,10 @@ services:
       - obi_net
     ports:
       - 3001:3001
+    extra_hosts:
+      - "e-filing.obi.gr: {--formio_host--}"
     environment:
       - VIRTUAL_HOST={--formio_host--}
-      - REVERSE_PROXY=false
       - DB_HOST=mongodb
       - DB_NAME=formio
       - ADMIN_EMAIL={--formio_admin_email--}
@@ -71,7 +76,7 @@ services:
       replicas: 1
       
   bonita:
-    image: bonita
+    image: bonita:7.6.3
     networks:
       - obi_net
     ports:
@@ -90,7 +95,7 @@ services:
     volumes:
       - bonita-volume:/opt/bonita
     deploy:
-      replicas: 0
+      replicas: 1
     entrypoint:
       - bash
       - -c
@@ -112,6 +117,8 @@ services:
 
   bonita-desktop:
     image: dorowu/ubuntu-desktop-lxde-vnc
+    networks:
+      - obi_net
     ports:
       - 6080:80
       - 5900:5900
@@ -127,6 +134,8 @@ services:
 
   node:
     image: "node"
+    networks:
+      - obi_net
     user: "node"
     working_dir: /home/node/app
     environment:
@@ -140,18 +149,33 @@ services:
     command: "npm start"
 
   alfresco:
-       image: "gui81/alfresco:201707"
-       ports:
-        - 8450:8080
-       volumes:
-        - alfresco-data-volume:/alfresco/alf_data
-        - alfresco-content-volume:/content
-        - alfresco-tomcat-logs:/alfresco/tomcat/logs
-       deploy:
-         replicas: 0
-       environment:
-        - DB_HOST=postgres
-        - DB_USERNAME={--alfresco_db_user--} 
-        - DB_PASSWORD={--alfresco_db_password--}
-       depends_on:
-        - postgres
+    image: "gui81/alfresco:201707"
+    networks:
+      - obi_net
+    ports:
+      - 8450:8080
+    volumes:
+      - alfresco-data-volume:/alfresco/alf_data
+      - alfresco-content-volume:/content
+      - alfresco-tomcat-logs:/alfresco/tomcat/logs
+    deploy:
+      replicas: 1
+    environment:
+      - DB_HOST=postgres
+      - DB_USERNAME={--alfresco_db_user--} 
+      - DB_PASSWORD={--alfresco_db_password--}
+    depends_on:
+      - postgres
+
+  wso2:
+    image: wso2is:5.5.0
+    build:
+      context: ${PWD}/vendors/swso2/
+    networks:
+      - obi_net
+    ports:
+      - 9443:9443
+    volumes:
+      - ${PWD}/assets/wso2carbon/wso2is-5.5.0/repository/conf/carbon.xml:/home/wso2carbon/wso2is-5.5.0/repository/conf/carbon.xml
+    deploy:
+      replicas: 1
