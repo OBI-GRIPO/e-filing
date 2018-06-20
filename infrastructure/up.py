@@ -13,11 +13,10 @@ def decode(key, enc):
 
 docker_compose = open("docker-compose.yml", "r").read()
 docker_compose = docker_compose.replace("{--formio_host--}", decode(sys.argv[1],open("secrets/formio_host", "r").read()))
+docker_compose = docker_compose.replace("{--formio_host_ip--}", decode(sys.argv[1],open("secrets/formio_host_ip", "r").read()))
 docker_compose = docker_compose.replace("{--formio_admin_email--}", decode(sys.argv[1],open("secrets/formio_admin_email", "r").read()))
 docker_compose = docker_compose.replace("{--formio_admin_password--}", decode(sys.argv[1],open("secrets/formio_admin_password", "r").read()))
 docker_compose = docker_compose.replace("{--formio_jwt_secret--}", decode(sys.argv[1],open("secrets/formio_jwt_secret", "r").read()))
-docker_compose = docker_compose.replace("{--formio_host--}", decode(sys.argv[1],open("secrets/formio_host", "r").read()))
-
 docker_compose = docker_compose.replace("{--bd_vnc_password--}", decode(sys.argv[1],open("secrets/bd_vnc_password", "r").read()))
 docker_compose = docker_compose.replace("{--bd_user--}", decode(sys.argv[1],open("secrets/bd_user", "r").read()))
 docker_compose = docker_compose.replace("{--bd_email--}", decode(sys.argv[1],open("secrets/bd_email", "r").read()))
@@ -30,5 +29,9 @@ docker_compose = docker_compose.replace("{--bonita_platform_password--}", decode
 docker_compose = docker_compose.replace("{--alfresco_password--}", decode(sys.argv[1],open("secrets/alfresco_password", "r").read()))
 docker_compose = docker_compose.replace("{--alfresco_db_password--}", decode(sys.argv[1],open("secrets/alfresco_db_password", "r").read()))
 docker_compose = docker_compose.replace("{--alfresco_db_user--}", decode(sys.argv[1],open("secrets/alfresco_db_user", "r").read()))
+docker_compose = docker_compose.replace("{--alfresco_host_share--}", decode(sys.argv[1],open("secrets/alfresco_host_share", "r").read()))
+docker_compose = docker_compose.replace("{--alfresco_host--}", decode(sys.argv[1],open("secrets/alfresco_host", "r").read()))
+docker_compose = docker_compose.replace("{--alfresco_host_ip--}", decode(sys.argv[1],open("secrets/alfresco_host_ip", "r").read()))
+docker_compose = docker_compose.replace("{--mysql_password--}", decode(sys.argv[1],open("secrets/mysql_password", "r").read()))
 
 print (docker_compose)

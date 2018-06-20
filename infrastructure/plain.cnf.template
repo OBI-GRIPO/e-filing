@@ -1,7 +1,8 @@
 # Rename to plain.cfg after set the following secrets
 # if string contains % must replaced with %% (config parser use interpolation)
 [Secrets]
-formio_host: example.com
+formio_host: localhost
+formio_host_ip: 127.0.0.1
 formio_admin_email: admin@example.com
 formio_admin_password: strongpassword
 formio_host: localhost
@@ -18,3 +19,7 @@ bonita_platform_password: pfsecret
 alfresco_password: admun
 alfresco_db_user: alfresco
 alfresco_db_password: alfresco
+alfresco_host_share: localhost
+alfresco_host: localhost
+alfresco_host_ip: 127.0.0.1
+mysql_password: somethingStrong

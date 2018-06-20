@@ -13,10 +13,18 @@ volumes:
     driver: local
   alfresco-data-volume:
     driver: local
-  alfresco-content-volume:
-    driver: local
   alfresco-tomcat-logs:
     driver: local
+  alfresco-share-logs:
+    driver: local  
+  alfresco-sorl-logs:
+    driver: local
+  alfresco-sorl-data:
+    driver: local
+  mysql_data:
+    driver:local
+  wp-content:
+    driver:local
 
 networks:
   obi_net:
@@ -28,20 +36,27 @@ services:
     image: postgres:9.4
     networks:
       - obi_net
+    ports:
+      - 5432:5432
     volumes:
-     - postgres-volume:/var/lib/postgresql/data
-     - ${PWD}/assets/docker-entrypoint-initdb.d/:/docker-entrypoint-initdb.d
-    deploy:
-      replicas: 1
+      - postgres-volume:/var/lib/postgresql/data
+      - ${PWD}/assets/docker-entrypoint-initdb.d/:/docker-entrypoint-initdb.d
     environment:
-     - POSTGRES_PASSWORD={--postgres_password--}
-     - ALFRESCO_DB=alfresco
-     - ALFRESCO_DB_USER={--alfresco_db_user--}
-     - ALFRESCO_DB_USER_PASSWORD={--alfresco_db_password--}
+      - POSTGRES_PASSWORD={--postgres_password--}
+      - ALFRESCO_DB=alfresco
+      - ALFRESCO_DB_USER={--alfresco_db_user--}
+      - ALFRESCO_DB_USER_PASSWORD={--alfresco_db_password--}
     command:
       - -c
       - max_prepared_transactions=100
-
+    deploy:
+      replicas: 1
+      restart_policy:
+        delay: 0s
+        window: 120s
+      placement:
+        constraints: [node.role == manager]
+         
   mongodb:
     image: mongo
     networks:
@@ -50,7 +65,12 @@ services:
       - mongo-volume:/data/db
     deploy:
       replicas: 1
-
+      restart_policy:
+        delay: 0s
+        window: 120s
+      placement:
+        constraints: [node.role == manager]
+              
   formio-api:
     image: skarvelis/formio-api:1.0
     build:
@@ -60,7 +80,7 @@ services:
     ports:
       - 3001:3001
     extra_hosts:
-      - "e-filing.obi.gr: {--formio_host--}"
+      - "{--formio_host--}: {--formio_host_ip--}"
     environment:
       - VIRTUAL_HOST={--formio_host--}
       - DB_HOST=mongodb
@@ -73,8 +93,13 @@ services:
     volumes:
       - formio-volume:/app
     deploy:
-      replicas: 1
-      
+      replicas: 0
+      restart_policy:
+        delay: 25s
+        window: 120s
+      placement:
+        constraints: [node.role == manager]
+            
   bonita:
     image: bonita:7.6.3
     networks:
@@ -82,20 +107,18 @@ services:
     ports:
       - 9090:8080
     environment:
-      - POSTGRES_ENV_POSTGRES_PASSWORD={--postgres_password--}
-      - DB_VENDOR=postgres
-      - DB_HOST=postgres
-      - TENANT_LOGIN={--bonita_tenant_login--}
-      - TENANT_PASSWORD={--bonita_tenant_password--}
-      - PLATFORM_LOGIN={--bonita_platform_login--}
-      - PLATFORM_PASSWORD={--bonita_platform_password--}
+      - POSTGRES_ENV_POSTGRES_PASSWORD="{--postgres_password--}"
+      - DB_VENDOR="postgres"
+      - DB_HOST="postgres"
+      - TENANT_LOGIN="{--bonita_tenant_login--}"
+      - TENANT_PASSWORD="{--bonita_tenant_password--}"
+      - PLATFORM_LOGIN="{--bonita_platform_login--}"
+      - PLATFORM_PASSWORD="{--bonita_platform_password--}"
       - HTTP_API=true
     depends_on:
       - postgres
     volumes:
       - bonita-volume:/opt/bonita
-    deploy:
-      replicas: 1
     entrypoint:
       - bash
       - -c
@@ -103,18 +126,25 @@ services:
         set -e
         echo 'Waiting for Postgres to be available'
         export PGPASSWORD="$$POSTGRES_ENV_POSTGRES_PASSWORD"
-        maxTries=10
+        maxTries=20
         while [ "$$maxTries" -gt 0 ] && ! psql -h "$$DB_HOST" -U 'postgres' -c '\l'; do
             let maxTries--
-            sleep 1
+            sleep 5
         done
         echo
         if [ "$$maxTries" -le 0 ]; then
-            echo >&2 'error: unable to contact Postgres after 10 tries'
+            echo >&2 'error: unable to contact Postgres after 20 tries'
             exit 1
         fi
         exec /opt/files/startup.sh
-
+    deploy:
+      replicas: 0
+      restart_policy:
+        delay: 25s
+        window: 120s
+      placement:
+        constraints: [node.role == manager]
+  
   bonita-desktop:
     image: dorowu/ubuntu-desktop-lxde-vnc
     networks:
@@ -130,7 +160,12 @@ services:
     volumes:
       - bonitad-volume:/home/{--bd_user--}
     deploy:
-      replicas: 1
+      replicas: 0
+      restart_policy:
+        delay: 15s
+        window: 120s
+      placement:
+        constraints: [node.role == manager]
 
   node:
     image: "node"
@@ -142,30 +177,115 @@ services:
       - NODE_ENV=production
     volumes:
       - ./obif/:/home/node/app
-    deploy:
-      replicas: 0
     ports:
       - 10631:10631
     command: "npm start"
+    deploy:
+      replicas: 0
+      restart_policy:
+        delay: 15s
+        window: 120s
+      placement:
+        constraints: [node.role == manager]
 
   alfresco:
-    image: "gui81/alfresco:201707"
+    image: obi/alf-platform:5.2.g
+    build: 
+      context: ${PWD}/vendors/alf/alf-platform/
+      args:
+        - ALFRESCO_DB_USER={--alfresco_db_user--}
+        - ALFRESCO_DB_USER_PASSWORD={--alfresco_db_password--}
+    environment:
+      CATALINA_OPTS: "-Xmx1G -XX:+UseConcMarkSweepGC"
+    depends_on:
+      - postgres
     networks:
       - obi_net
     ports:
-      - 8450:8080
+      - 8080:8080
+    extra_hosts:
+      - "{--alfresco_host--}:{--alfresco_host_ip--}"
     volumes:
-      - alfresco-data-volume:/alfresco/alf_data
-      - alfresco-content-volume:/content
-      - alfresco-tomcat-logs:/alfresco/tomcat/logs
+      - alfresco-tomcat-logs:/usr/local/tomcat/logs/
+      - alfresco-data-volume:/opt/alf_data
+    tmpfs:
+      - /tmp
+      - /usr/local/tomcat/temp/
+      - /usr/local/tomcat/work/
     deploy:
-      replicas: 1
+      replicas: 0
+      restart_policy:
+        delay: 45s
+        window: 220s
+      placement:
+        constraints: [node.role == manager]
+
+  libreoffice:
+    image: obi/alf-libreoffice:5.4.7
+    build: 
+      context: ${PWD}/vendors/alf/alf-libreoffice/
+    networks:
+      - obi_net
+    deploy:
+      replicas: 0
+      restart_policy:
+        delay: 15s
+        window: 120s
+      placement:
+        constraints: [node.role == manager]
+
+  solr:
+    image: obi/alf-solr:5.2.g
+    build: 
+      context: ${PWD}/vendors/alf/alf-sorl/
     environment:
-      - DB_HOST=postgres
-      - DB_USERNAME={--alfresco_db_user--} 
-      - DB_PASSWORD={--alfresco_db_password--}
+      CATALINA_OPTS: "-Xmx1G -XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:G1HeapRegionSize=8m -XX:MaxGCPauseMillis=200"
     depends_on:
-      - postgres
+      - alfresco
+    networks:
+      - obi_net
+    volumes:
+      - alfresco-sorl-logs:/usr/local/tomcat/logs/
+      - alfresco-sorl-data:/opt/solr_data
+    tmpfs:
+      - /tmp
+      - /usr/local/tomcat/temp/
+      - /usr/local/tomcat/work/
+    deploy:
+      replicas: 0
+      restart_policy:
+        delay: 15s
+        window: 120s
+      placement:
+        constraints: [node.role == manager]
+
+  share:
+    image: obi/alf-share:5.2.f
+    build: 
+      context: ${PWD}/vendors/alf/alf-share/    
+    environment:
+      CATALINA_OPTS: "-Xmx1G -XX:+UseConcMarkSweepGC"
+    depends_on:
+      - alfresco
+    networks:
+      - obi_net
+    extra_hosts:
+      - "{--alfresco_host--}:{--alfresco_host_ip--}"
+    ports:
+      - 8081:8080
+    volumes:
+      - alfresco-share-logs:/usr/local/tomcat/logs/
+    tmpfs:
+      - /tmp
+      - /usr/local/tomcat/temp/
+      - /usr/local/tomcat/work/
+    deploy:
+      replicas: 0
+      restart_policy:
+        delay: 15s
+        window: 120s
+      placement:
+        constraints: [node.role == manager]
 
   wso2:
     image: wso2is:5.5.0
@@ -175,7 +295,53 @@ services:
       - obi_net
     ports:
       - 9443:9443
+      - 9763:9763
+      - 4000:4000
     volumes:
       - ${PWD}/assets/wso2carbon/wso2is-5.5.0/repository/conf/carbon.xml:/home/wso2carbon/wso2is-5.5.0/repository/conf/carbon.xml
     deploy:
-      replicas: 1
+      replicas: 0
+      restart_policy:
+        delay: 15s
+        window: 120s
+      placement:
+        constraints: [node.role == manager]
+
+
+  wordpress:
+    image: wordpress
+    networks:
+      - obi_net
+    depends_on:
+      - mysql
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - wp-content:/var/www/html/wp-content 
+    environment:
+      WORDPRESS_DB_PASSWORD: {--mysql_password--}
+      WORDPRESS_DB_HOST: mysql:3306
+    deploy:
+      replicas: 0
+      restart_policy:
+        delay: 15s
+        window: 120s
+      placement:
+        constraints: [node.role == manager]
+
+  mysql:
+    image: mysql:5.7
+    networks:
+      - obi_net
+    volumes:
+       - mysql_data:/var/lib/mysql    
+    environment:
+      MYSQL_ROOT_PASSWORD: {--mysql_password--}
+    deploy:
+      replicas: 0
+      restart_policy:
+        delay: 15s
+        window: 120s
+      placement:
+        constraints: [node.role == manager]

@@ -1,8 +1,12 @@
 #!/bin/bash
 #to create Alfresco And Bonita users and databases
+sed -i "s/^.*max_prepared_transactions\s*=\s*\(.*\)$/max_prepared_transactions = 100/" "$PGDATA"/postgresql.conf
+sed -i "s/^.*max_connections\s*=\s*\(.*\)$/max_connections = 275/" "$PGDATA"/postgresql.conf
+
+sed -i "s/^host\sall\sall\sall\smd5$/host all all all password/" "$PGDATA"/pg_hba.conf
+echo "host all all all md5" >>"$PGDATA"/pg_hba.conf
 
 set -e
-
 echo "POSTGRES_USER $POSTGRES_USER"
 echo "POSTGRES_DB $POSTGRES_DB"
 echo "ALFRESCO_DB_USER $ALFRESCO_DB_USER"
