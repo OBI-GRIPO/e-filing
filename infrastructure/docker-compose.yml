@@ -21,11 +21,11 @@ volumes:
     driver: local
   alfresco-sorl-data:
     driver: local
-  mysql_data:
-    driver:local
   wp-content:
-    driver:local
-
+    driver: local
+  mysql-data:
+    driver: local
+    
 networks:
   obi_net:
     external: true
@@ -46,6 +46,12 @@ services:
       - ALFRESCO_DB=alfresco
       - ALFRESCO_DB_USER={--alfresco_db_user--}
       - ALFRESCO_DB_USER_PASSWORD={--alfresco_db_password--}
+      - BONITA_DB_NAME=bonitadb
+      - BONITA_DB_USER=bonitauser
+      - BONITA_DB_PASS={--bonita_db_pass--}
+      - BONITA_BIZ_DB_NAME=businessdb
+      - BONITA_BIZ_DB_USER=businessuser
+      - BONITA_BIZ_DB_PASS={--bonita_db_biz_pass--}
     command:
       - -c
       - max_prepared_transactions=100
@@ -107,13 +113,22 @@ services:
     ports:
       - 9090:8080
     environment:
-      - POSTGRES_ENV_POSTGRES_PASSWORD="{--postgres_password--}"
-      - DB_VENDOR="postgres"
-      - DB_HOST="postgres"
-      - TENANT_LOGIN="{--bonita_tenant_login--}"
-      - TENANT_PASSWORD="{--bonita_tenant_password--}"
-      - PLATFORM_LOGIN="{--bonita_platform_login--}"
-      - PLATFORM_PASSWORD="{--bonita_platform_password--}"
+      - POSTGRES_ENV_POSTGRES_PASSWORD={--postgres_password--}
+      - DB_ADMIN_USER=postgres
+      - DB_ADMIN_PASS={--postgres_password--}
+      - DB_VENDOR=postgres
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=bonitadb
+      - DB_USER=bonitauser
+      - DB_PASS={--bonita_db_pass--}
+      - BIZ_DB_NAME=businessdb
+      - BIZ_DB_USER=businessuser
+      - BIZ_DB_PASS={--bonita_db_biz_pass--}
+      - TENANT_LOGIN={--bonita_tenant_login--}
+      - TENANT_PASSWORD={--bonita_tenant_password--}
+      - PLATFORM_LOGIN={--bonita_platform_login--}
+      - PLATFORM_PASSWORD={--bonita_platform_password--}
       - HTTP_API=true
     depends_on:
       - postgres
@@ -307,7 +322,6 @@ services:
       placement:
         constraints: [node.role == manager]
 
-
   wordpress:
     image: wordpress
     networks:
@@ -335,7 +349,7 @@ services:
     networks:
       - obi_net
     volumes:
-       - mysql_data:/var/lib/mysql    
+      - mysql-data:/var/lib/mysql    
     environment:
       MYSQL_ROOT_PASSWORD: {--mysql_password--}
     deploy:
