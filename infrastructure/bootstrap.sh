@@ -5,6 +5,15 @@ if [ -z `docker network ls --filter name=obi_net --format "{{.ID}}"` ] ;
 then
  echo "create network"
  docker network create -d overlay --subnet=10.6.3.0/24 --aux-address 'dns=10.6.3.254' --attachable obi_net
+else
+ echo 'remove old network due docker bug, i am on investicate to fill a issue' 
+ docker network rm obi_net
+ if [ $? -ne 0 ]; then
+ echo -e "\e[1mmay need to run clean.sh first"
+ exit 1
+ fi
+ echo "recreate the network"
+ docker network create -d overlay --subnet=10.6.3.0/24 --aux-address 'dns=10.6.3.254' --attachable obi_net
 fi
 
 #build formio image if not exist localy
@@ -42,4 +51,4 @@ then
  ./up.py $1 | docker stack deploy --compose-file /dev/stdin obi
 fi
 
-
+#TODO scale service one by one
