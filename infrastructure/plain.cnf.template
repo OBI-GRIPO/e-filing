@@ -25,3 +25,4 @@ alfresco_host_ip: 127.0.0.1
 mysql_password: somethingStrong
 bonita_db_pass: somethingStrong
 bonita_db_biz_pass: somethingStrong
+wso2_db_pass: somethingStrong
