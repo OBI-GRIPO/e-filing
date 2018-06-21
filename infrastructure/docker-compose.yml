@@ -52,6 +52,9 @@ services:
       - BONITA_BIZ_DB_NAME=businessdb
       - BONITA_BIZ_DB_USER=businessuser
       - BONITA_BIZ_DB_PASS={--bonita_db_biz_pass--}
+      - WSO2_DB_USER=wso2dbuser
+      - WSO2_DB_PASS={--wso2_db_pass--}
+      - WSO2_DB_NAME=wso2db
     command:
       - -c
       - max_prepared_transactions=100
@@ -114,6 +117,7 @@ services:
       - 9090:8080
     environment:
       - POSTGRES_ENV_POSTGRES_PASSWORD={--postgres_password--}
+      - ENSURE_DB_CHECK_AND_CREATION=false
       - DB_ADMIN_USER=postgres
       - DB_ADMIN_PASS={--postgres_password--}
       - DB_VENDOR=postgres
@@ -308,12 +312,19 @@ services:
       context: ${PWD}/vendors/swso2/
     networks:
       - obi_net
+    environment:
+      - WSO2_DB_USER=wso2dbuser
+      - WSO2_DB_PASS={--wso2_db_pass--}
+      - WSO2_DB_NAME=wso2db
     ports:
       - 9443:9443
       - 9763:9763
       - 4000:4000
     volumes:
       - ${PWD}/assets/wso2carbon/wso2is-5.5.0/repository/conf/carbon.xml:/home/wso2carbon/wso2is-5.5.0/repository/conf/carbon.xml
+      - ${PWD}/assets/wso2carbon/wso2is-5.5.0/repository/components/dropins/org.wso2.carbon.identity.application.authenticator.government.gsis-5.1.3.jar:/home/wso2carbon/wso2is-5.5.0/repository/components/dropins/org.wso2.carbon.identity.application.authenticator.government.gsis-5.1.3.jar
+      - ${PWD}/assets/wso2carbon/wso2is-5.5.0/repository/components/lib/postgresql-42.2.2.jar:/home/wso2carbon/wso2is-5.5.0/repository/components/lib/postgresql-42.2.2.jar
+      - ${PWD}/assets/wso2carbon/wso2is-5.5.0/repository/conf/datasources/master-datasources.xml:/home/wso2carbon/master-datasources.xml
     deploy:
       replicas: 0
       restart_policy:
@@ -321,6 +332,16 @@ services:
         window: 120s
       placement:
         constraints: [node.role == manager]
+    entrypoint:
+      - bash
+      - -c
+      - |
+        set -e
+        #you cant change inode of mounted by docker file so copy it in place and then sed
+        cp /home/wso2carbon/master-datasources.xml /home/wso2carbon/wso2is-5.5.0/repository/conf/datasources/master-datasources.xml
+        sed -i "s/{--wso2_db_pass_replace--}/$${WSO2_DB_PASS}/g" /home/wso2carbon/wso2is-5.5.0/repository/conf/datasources/master-datasources.xml
+        exec /home/wso2carbon/start.sh        
+        
 
   wordpress:
     image: wordpress
