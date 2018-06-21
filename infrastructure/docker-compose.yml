@@ -157,7 +157,7 @@ services:
         fi
         exec /opt/files/startup.sh
     deploy:
-      replicas: 0
+      replicas: 1
       restart_policy:
         delay: 25s
         window: 120s
@@ -231,12 +231,13 @@ services:
     volumes:
       - alfresco-tomcat-logs:/usr/local/tomcat/logs/
       - alfresco-data-volume:/opt/alf_data
+      - ${PWD}/assets/waitlibreoffice.sh:/waitlibreoffice.sh
     tmpfs:
       - /tmp
       - /usr/local/tomcat/temp/
       - /usr/local/tomcat/work/
     deploy:
-      replicas: 0
+      replicas: 1
       restart_policy:
         delay: 45s
         window: 220s
@@ -249,16 +250,18 @@ services:
         set -e
         echo 'Waiting for Postgres to be available'
         export PGPASSWORD="$$POSTGRES_ENV_POSTGRES_PASSWORD"
-        maxTries=20
+        maxTries=40
         while [ "$$maxTries" -gt 0 ] && ! psql -h "$$DB_HOST" -U 'postgres' -c '\l'; do
             let maxTries--
             sleep 5
         done
         echo
         if [ "$$maxTries" -le 0 ]; then
-            echo >&2 'error: unable to contact Postgres after 20 tries'
+            echo >&2 'error: unable to contact Postgres after 40 tries'
             exit 1
         fi
+        #echo 'Waiting for Libreoffice to be available'
+        #aa=$$(/waitlibreoffice.sh &>/dev/null)
         echo "set admin password (just ignore error if alfresco db does not yet exists)"
         psql -U 'postgres' -h "$$DB_HOST" alfresco << EOSQL
         UPDATE alf_node_properties  
@@ -291,7 +294,7 @@ services:
     networks:
       - obi_net
     deploy:
-      replicas: 0
+      replicas: 1
       restart_policy:
         delay: 15s
         window: 120s
@@ -375,7 +378,7 @@ services:
       - ${PWD}/assets/wso2carbon/wso2is-5.5.0/repository/conf/user-mgt.xml:/home/wso2carbon/user-mgt.xml
       - ${PWD}/assets/wso2carbon/wso2is-5.5.0/repository/resources/security/wso2carbon.jks:/home/wso2carbon//wso2is-5.5.0/repository/resources/security/wso2carbon.jks
     deploy:
-      replicas: 0
+      replicas: 1
       restart_policy:
         delay: 15s
         window: 120s
