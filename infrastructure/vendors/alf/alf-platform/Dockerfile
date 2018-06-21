@@ -67,9 +67,12 @@ COPY assets/alfresco-global.properties webapps/alfresco/WEB-INF/classes/alfresco
 
 ARG ALFRESCO_DB_USER
 ARG ALFRESCO_DB_USER_PASSWORD
+ARG ALFRESCO_ADMIN_PASSWORD
 
 RUN sed -i "s/{--alfresco_db_user--}/${ALFRESCO_DB_USER}/g" webapps/alfresco/WEB-INF/classes/alfresco-global.properties
 RUN sed -i "s/{--alfresco_db_password--}/${ALFRESCO_DB_USER_PASSWORD}/g" webapps/alfresco/WEB-INF/classes/alfresco-global.properties
+RUN sed -i "s/{--alfresco_admin_password--}/${ALFRESCO_ADMIN_PASSWORD}/g" webapps/alfresco/WEB-INF/classes/alfresco-global.properties
+
 
 ENV JAVA_OPTS " -XX:-DisableExplicitGC -Djava.security.egd=file:/dev/./urandom -Djava.awt.headless=true -Dfile.encoding=UTF-8 "
 

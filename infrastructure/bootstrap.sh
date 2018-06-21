@@ -52,3 +52,34 @@ then
 fi
 
 #TODO scale service one by one
+
+#make sure postgres is up
+#docker exec -it $(docker ps -aqf "name=obi_postgres") psql -qt -U 'postgres' -c "SELECT datname FROM pg_catalog.pg_database WHERE datname='bonitadb'";
+
+#start bonita
+
+#start libreoffice
+
+#make sure libreoffice is running
+#start alfreso
+
+
+#make sure alfresco is up
+
+#start sorl
+
+#start share
+
+#make sure mongo is up
+
+#start form-io
+
+#start mysql
+
+#make sure mysql is up
+
+#start wordpress
+
+
+
+

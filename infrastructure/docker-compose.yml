@@ -214,6 +214,7 @@ services:
       args:
         - ALFRESCO_DB_USER={--alfresco_db_user--}
         - ALFRESCO_DB_USER_PASSWORD={--alfresco_db_password--}
+        - ALFRESCO_ADMIN_PASSWORD={--alfresco_admin_password--}
     environment:
       CATALINA_OPTS: "-Xmx1G -XX:+UseConcMarkSweepGC"
     depends_on:

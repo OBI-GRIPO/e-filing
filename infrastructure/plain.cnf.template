@@ -22,6 +22,7 @@ alfresco_db_password: alfresco
 alfresco_host_share: localhost
 alfresco_host: localhost
 alfresco_host_ip: 127.0.0.1
+alfresco_admin_password: somethingStrong
 mysql_password: somethingStrong
 bonita_db_pass: somethingStrong
 bonita_db_biz_pass: somethingStrong
