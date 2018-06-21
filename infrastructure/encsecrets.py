@@ -51,6 +51,7 @@ print(encode(key,config['Secrets']['alfresco_host_share']),file=open("secrets/al
 print(encode(key,config['Secrets']['alfresco_host_ip']),file=open("secrets/alfresco_host_ip","w"))
 print(encode(key,config['Secrets']['mysql_password']),file=open("secrets/mysql_password","w"))
 print(encode(key,config['Secrets']['wso2_db_pass']),file=open("secrets/wso2_db_pass","w"))
+print(encode(key,config['Secrets']['wso2_admin_init_pass']),file=open("secrets/wso2_admin_init_pass","w"))
 
 
 #print(decode(key,encode(key,api_dbpassword)))

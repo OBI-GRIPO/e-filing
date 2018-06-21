@@ -26,3 +26,5 @@ mysql_password: somethingStrong
 bonita_db_pass: somethingStrong
 bonita_db_biz_pass: somethingStrong
 wso2_db_pass: somethingStrong
+wso2_admin_init_pass: somethingStrong
+
