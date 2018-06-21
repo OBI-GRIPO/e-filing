@@ -44,12 +44,12 @@
        This is will become part of the End Point Reference of the
        services deployed on this server instance.
     -->
-    <HostName>e-filing.obi.gr</HostName>
+    <HostName>ids.obi.gr</HostName>
 
     <!--
     Host name to be used for the Carbon management console
     -->
-    <MgtHostName>e-filing.obi.gr</MgtHostName>
+    <MgtHostName>ids.obi.gr</MgtHostName>
 
     <!--
         The URL of the back end server. This is where the admin services are hosted and
