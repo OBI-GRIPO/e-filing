@@ -78,5 +78,12 @@ ENV JAVA_OPTS " -XX:-DisableExplicitGC -Djava.security.egd=file:/dev/./urandom -
 
 EXPOSE 8080
 
+# install required packages for seting password and some tools
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+      curl mc htop postgresql-client postgresql-client-common iputils-ping \ 
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+    
 WORKDIR /root
 VOLUME "/opt/alf_data/"

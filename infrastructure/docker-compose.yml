@@ -217,6 +217,9 @@ services:
         - ALFRESCO_ADMIN_PASSWORD={--alfresco_admin_password--}
     environment:
       CATALINA_OPTS: "-Xmx1G -XX:+UseConcMarkSweepGC"
+      POSTGRES_ENV_POSTGRES_PASSWORD: "{--postgres_password--}"
+      DB_HOST: "postgres"
+      ALFRESCO_ADMIN_PASSWORD: "{--alfresco_admin_password--}"
     depends_on:
       - postgres
     networks:
@@ -239,6 +242,47 @@ services:
         window: 220s
       placement:
         constraints: [node.role == manager]
+    entrypoint:
+      - bash
+      - -c
+      - |
+        set -e
+        echo 'Waiting for Postgres to be available'
+        export PGPASSWORD="$$POSTGRES_ENV_POSTGRES_PASSWORD"
+        maxTries=20
+        while [ "$$maxTries" -gt 0 ] && ! psql -h "$$DB_HOST" -U 'postgres' -c '\l'; do
+            let maxTries--
+            sleep 5
+        done
+        echo
+        if [ "$$maxTries" -le 0 ]; then
+            echo >&2 'error: unable to contact Postgres after 20 tries'
+            exit 1
+        fi
+        echo "set admin password (just ignore error if alfresco db does not yet exists)"
+        psql -U 'postgres' -h "$$DB_HOST" alfresco << EOSQL
+        UPDATE alf_node_properties  
+         SET string_value='$${ALFRESCO_ADMIN_PASSWORD}'
+         WHERE 
+         node_id= (SELECT anp1.node_id      
+           FROM alf_node_properties anp1  
+           INNER JOIN alf_qname aq1 ON aq1.id = anp1.qname_id   
+           INNER JOIN alf_node_properties anp2 ON anp2.node_id = anp1.node_id    
+           INNER JOIN alf_qname aq2 ON aq2.id = anp2.qname_id                    
+           WHERE aq1.local_name = 'password'
+           AND aq2.local_name = 'username'
+           AND anp2.string_value = 'admin')
+         AND 
+         qname_id=(SELECT anp1.qname_id      
+           FROM alf_node_properties anp1  
+           INNER JOIN alf_qname aq1 ON aq1.id = anp1.qname_id   
+           INNER JOIN alf_node_properties anp2 ON anp2.node_id = anp1.node_id    
+           INNER JOIN alf_qname aq2 ON aq2.id = anp2.qname_id                    
+           WHERE aq1.local_name = 'password'
+           AND aq2.local_name = 'username'
+           AND anp2.string_value = 'admin'); 
+        EOSQL
+        exec /usr/local/tomcat/bin/catalina.sh run
 
   libreoffice:
     image: obi/alf-libreoffice:5.4.7
