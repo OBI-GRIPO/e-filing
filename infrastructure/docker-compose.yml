@@ -260,8 +260,8 @@ services:
             echo >&2 'error: unable to contact Postgres after 40 tries'
             exit 1
         fi
-        #echo 'Waiting for Libreoffice to be available'
-        #aa=$$(/waitlibreoffice.sh &>/dev/null)
+        echo 'Waiting for Libreoffice to be available'
+        aa=$$(/waitlibreoffice.sh &>/dev/null || true)
         echo "set admin password (just ignore error if alfresco db does not yet exists)"
         psql -U 'postgres' -h "$$DB_HOST" alfresco << EOSQL
         UPDATE alf_node_properties  
