@@ -6,13 +6,14 @@
 
 Οι υπηρεσίες στις οποίες ενδέχεται να έχουν πρόσβαση χείριστες του οργανισμού είναι οι:
 
-* Alfresco Share
+* Alfresco Share 
 
   http://share:8080/share
 
 και
 
 * Bonita BPM
+
   http://bonita:8080/bonita
 
 
