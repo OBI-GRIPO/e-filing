@@ -423,7 +423,8 @@ services:
       - 80:80
       - 443:443
     volumes:
-      - wp-content:/var/www/html/wp-content 
+      - wp-content:/var/www/html/wp-content
+      - ${PWD}/assets/setWpDefines.sh:/usr/local/bin/setWpDefines.sh
     environment:
       WORDPRESS_DB_PASSWORD: {--mysql_password--}
       WORDPRESS_DB_HOST: mysql:3306
