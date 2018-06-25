@@ -102,7 +102,7 @@ services:
     volumes:
       - formio-volume:/app
     deploy:
-      replicas: 0
+      replicas: 1
       restart_policy:
         delay: 25s
         window: 120s
@@ -319,12 +319,22 @@ services:
       - /usr/local/tomcat/temp/
       - /usr/local/tomcat/work/
     deploy:
-      replicas: 0
+      replicas: 1
       restart_policy:
         delay: 15s
         window: 120s
       placement:
         constraints: [node.role == manager]
+    entrypoint:
+      - bash
+      - -c
+      - |
+        echo "Wait alfresco"
+        until $$(curl --output /dev/null --silent --head --fail http://alfresco:8080/alfresco/); do
+          printf '.'
+          sleep 5
+        done
+        exec /usr/local/tomcat/bin/catalina.sh run
 
   share:
     image: obi/alf-share:5.2.f
@@ -347,13 +357,23 @@ services:
       - /usr/local/tomcat/temp/
       - /usr/local/tomcat/work/
     deploy:
-      replicas: 0
+      replicas: 1
       restart_policy:
         delay: 15s
         window: 120s
       placement:
         constraints: [node.role == manager]
-
+    entrypoint:
+      - bash
+      - -c
+      - |
+        echo "Wait alfresco"
+        until $$(curl --output /dev/null --silent --head --fail http://alfresco:8080/alfresco/); do
+          printf '.'
+          sleep 5
+        done
+        exec /usr/local/tomcat/bin/catalina.sh run
+        
   wso2:
     image: wso2is:5.5.0
     build:
@@ -424,7 +444,7 @@ services:
       WORDPRESS_DB_PASSWORD: {--mysql_password--}
       WORDPRESS_DB_HOST: mysql:3306
     deploy:
-      replicas: 0
+      replicas: 1
       restart_policy:
         delay: 15s
         window: 120s
@@ -440,7 +460,7 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: {--mysql_password--}
     deploy:
-      replicas: 0
+      replicas: 1
       restart_policy:
         delay: 15s
         window: 120s
