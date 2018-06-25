@@ -1,0 +1,62 @@
+version: '3.6'
+
+services:
+
+  postgres:
+    ports:
+      - 5432:5432
+
+  mongodb:
+    ports:
+      - 27017:27017
+      - 27018:27018
+      - 27019:27019
+              
+  formio-api:
+    ports:
+      - 3001:3001
+ 
+  bonita:
+    ports:
+      - 9090:8080
+
+  bonita-desktop:
+    ports:
+      - 6080:80
+      - 5900:5900
+      - 10000:8080
+
+  node:
+    ports:
+      - 10631:10631
+
+  alfresco:
+    ports:
+      - 8080:8080
+
+  libreoffice:
+    ports:
+      - 8100:8100
+
+  solr:
+    ports:
+      - 8082:8080
+
+  share:
+    ports:
+      - 8081:8080
+
+  wso2:
+    ports:
+      - 9443:9443
+      - 9763:9763
+      - 4000:4000      
+
+  wordpress:
+    ports:
+      - 80:80
+      - 443:443
+      
+  mysql:
+    ports:
+      - 3306:3306

@@ -36,8 +36,6 @@ services:
     image: postgres:9.4
     networks:
       - obi_net
-    ports:
-      - 5432:5432
     volumes:
       - postgres-volume:/var/lib/postgresql/data
       - ${PWD}/assets/docker-entrypoint-initdb.d/:/docker-entrypoint-initdb.d
@@ -86,8 +84,6 @@ services:
       context: ${PWD}/vendors/dfio
     networks:
       - obi_net
-    ports:
-      - 3001:3001
     extra_hosts:
       - "{--formio_host--}: {--formio_host_ip--}"
     environment:
@@ -113,8 +109,6 @@ services:
     image: bonita:7.6.3
     networks:
       - obi_net
-    ports:
-      - 9090:8080
     environment:
       - POSTGRES_ENV_POSTGRES_PASSWORD={--postgres_password--}
       - ENSURE_DB_CHECK_AND_CREATION=false
@@ -168,10 +162,6 @@ services:
     image: dorowu/ubuntu-desktop-lxde-vnc
     networks:
       - obi_net
-    ports:
-      - 6080:80
-      - 5900:5900
-      - 10000:8080
     environment: 
       - VNC_PASSWORD={--bd_vnc_password--}
       - USER={--bd_user--} 
@@ -196,8 +186,6 @@ services:
       - NODE_ENV=production
     volumes:
       - ./obif/:/home/node/app
-    ports:
-      - 10631:10631
     command: "npm start"
     deploy:
       replicas: 0
@@ -224,8 +212,6 @@ services:
       - postgres
     networks:
       - obi_net
-    ports:
-      - 8080:8080
     extra_hosts:
       - "{--alfresco_host--}:{--alfresco_host_ip--}"
     volumes:
@@ -348,8 +334,6 @@ services:
       - obi_net
     extra_hosts:
       - "{--alfresco_host--}:{--alfresco_host_ip--}"
-    ports:
-      - 8081:8080
     volumes:
       - alfresco-share-logs:/usr/local/tomcat/logs/
     tmpfs:
