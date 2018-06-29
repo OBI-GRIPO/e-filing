@@ -25,7 +25,9 @@ services:
       - 6080:80
       - 5900:5900
       - 10000:8080
-
+    deploy:
+      replicas: 1
+      
   node:
     ports:
       - 10631:10631
