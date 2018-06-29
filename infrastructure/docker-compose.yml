@@ -375,7 +375,8 @@ services:
       - 443:443
     volumes:
       - wp-content:/var/www/html/wp-content
-      - ${PWD}/assets/setWpDefines.sh:/usr/local/bin/setWpDefines.sh
+      - ${PWD}/assets/wp/setWpDefines.sh:/usr/local/bin/setWpDefines.sh
+      - ${PWD}/assets/wp/etc/php/conf.d/upload.ini:/usr/local/etc/php/conf.d/upload.ini
     environment:
       WORDPRESS_DB_PASSWORD: {--mysql_password--}
       WORDPRESS_DB_HOST: mysql:3306
