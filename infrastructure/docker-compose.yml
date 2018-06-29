@@ -191,7 +191,7 @@ services:
     environment:
       - NODE_ENV=production
     volumes:
-      - ./obif/:/home/node/app
+      - ${PWD}/obif/:/home/node/app
     command: "npm start"
     deploy:
       replicas: 1
