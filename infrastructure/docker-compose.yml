@@ -87,7 +87,7 @@ services:
     extra_hosts:
       - "{--formio_host--}: {--formio_host_ip--}"
     environment:
-      - VIRTUAL_HOST={--formio_host--}
+      - VIRTUAL_HOST=formio-api
       - DB_HOST=mongodb
       - DB_NAME=formio
       - ADMIN_EMAIL={--formio_admin_email--}
@@ -97,6 +97,7 @@ services:
       - mongodb
     volumes:
       - formio-volume:/app
+      - ${PWD}/assets/waitmongodb.sh:/waitmongodb.sh
     deploy:
       replicas: 1
       restart_policy:
@@ -104,7 +105,15 @@ services:
         window: 120s
       placement:
         constraints: [node.role == manager]
-            
+    entrypoint:
+      - bash
+      - -c
+      - |
+        set -e
+        echo 'Waiting for MongoDB to be available'
+        aa=$$(/waitmongodb.sh &>/dev/null || true)        
+        exec /start.sh        
+
   bonita:
     image: bonita:7.6.3
     networks:
@@ -188,7 +197,7 @@ services:
       - ./obif/:/home/node/app
     command: "npm start"
     deploy:
-      replicas: 0
+      replicas: 1
       restart_policy:
         delay: 15s
         window: 120s
