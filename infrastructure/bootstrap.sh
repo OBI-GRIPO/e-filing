@@ -83,13 +83,6 @@ then
  docker-compose build formio-api
 fi
 
-#build wso2 image  if not exist localy
-if [[ "$(docker images -q wso2is 2> /dev/null)" == "" ]];
-then
- echo "build wso2 image"
- docker-compose build wso2
-fi
-
 #start dns
 if [ -z `docker ps --filter name=dns* --format "{{.ID}}"` ] ;
 then

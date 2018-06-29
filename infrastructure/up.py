@@ -36,8 +36,6 @@ docker_compose = docker_compose.replace("{--alfresco_host--}", decode(sys.argv[1
 docker_compose = docker_compose.replace("{--alfresco_host_ip--}", decode(sys.argv[1],open("secrets/alfresco_host_ip", "r").read()))
 docker_compose = docker_compose.replace("{--alfresco_admin_password--}", decode(sys.argv[1],open("secrets/alfresco_admin_password", "r").read()))
 docker_compose = docker_compose.replace("{--mysql_password--}", decode(sys.argv[1],open("secrets/mysql_password", "r").read()))
-docker_compose = docker_compose.replace("{--wso2_db_pass--}", decode(sys.argv[1],open("secrets/wso2_db_pass", "r").read()))
-docker_compose = docker_compose.replace("{--wso2_admin_init_pass--}", decode(sys.argv[1],open("secrets/wso2_admin_init_pass", "r").read()))
 
 
 print (docker_compose)
