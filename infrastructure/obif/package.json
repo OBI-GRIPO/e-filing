@@ -1,16 +1,22 @@
 {
   "name": "OBIFormsServer",
   "version": "1.0.0",
+  "description": "A form.io webhook receiver to start related Bonita Process.",  
   "private": true,
   "scripts": {
     "start": "npm install && node server.js"
   },
+  "author": "Panagiotis Skarvelis",
+  "license": "EUPL v1.1",
   "dependencies": {
-    "body-parser": "1.18.2",
-    "express": "4.16.2",
     "formiojs": "^2.29.0",
     "mime-db": "*",
     "mime-lookup": "*",
     "safe-buffer": "5.1.1"
+    "basic-auth": "^1.0.1",
+    "basic-auth-connect": "^1.0.0",
+    "body-parser": "^1.12.4",
+    "express": "^4.12.4",
+    "method-override": "^2.3.3"
   }
 }

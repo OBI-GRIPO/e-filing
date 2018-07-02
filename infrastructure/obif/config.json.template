@@ -1,0 +1,10 @@
+{
+  "port": 10631,
+  "username": "username",
+  "password": "astrongpassword",
+  "bonita_user":"walter.bates",
+  "bonita_password":"bpm",
+  "bonita_host":"localhost",
+  "bonita_port":"8080",
+  "bonita_process":"AnBonitaProcess"
+}
