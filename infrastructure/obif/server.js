@@ -4,11 +4,14 @@ var bodyParser = require('body-parser');
 var methodOverride = require('method-override');
 var http = require('http');
 var config = require('./config.json');
+var querystring = require('querystring');
+
 
 //TODO move as node module
-function init(){
+function init(sid){
  
  function step1(){
+  console.log("on step 1 "+sid);
   var bonita_post_data=querystring.stringify({
      username: config.bonita_user,
      password: config.bonita_password,
@@ -37,14 +40,18 @@ function init(){
 			
 		   
            if (cookiestr.startsWith('X-Bonita-API-Token'))  {
-              const regex = /^X-Bonita-API-Token=(\S{8}-\S{4}-\S{4}-\S{4}-\S{12});\sPath=\/$/gm;
+			   
+			   
+              const regex = /^X-Bonita-API-Token=(\S{8}-\S{4}-\S{4}-\S{4}-\S{12});\sPath=\/bonita$/gm;
                let m;
               while ((m = regex.exec(cookiestr)) !== null) {
                  // This is necessary to avoid infinite loops with zero-width matches
                 if (m.index === regex.lastIndex) {
                     regex.lastIndex++;
                      }
-                                        
+                      
+                      
+                     console.log("go to step 2");                       
                      //call start process
                      step2(m[1],setcookie); //F@Bonita you need JSESSION id also....                     
                      
@@ -69,8 +76,10 @@ post_req.end();
 //Start process with submition data
 //TODO set submition id 
 function step3(token,cookie,pid){
+ 	   console.log("on step 1 sid="+sid +" token="+token+" cookie="+cookie+" pid="+pid);
  
-  var bonita_post_data= JSON.stringify({submition_id:"5b3873eb076e80002c4969f8"});//TODO
+ 
+  var bonita_post_data= JSON.stringify({submition_id:sid});
   console.log(bonita_post_data);
   
   var bonita_post_options = {
@@ -113,6 +122,9 @@ function step3(token,cookie,pid){
 //Get Id of process By name
 //TODO make sure you get the latest 
 function step2(token,cookie){
+	
+	   console.log("on step 1 sid="+sid +" token="+token+" cookie="+cookie);
+	
   var bonita_post_options = {
       host: config.bonita_host,
       port: config.bonita_port,
@@ -155,12 +167,12 @@ app.use(basicAuth(config.username, config.password));
 
 // Handle the requests.
 
-app.post('/*', function(req, res, next) {
+app.post('/start/process', function(req, res, next) {
 
   // This shows all the available data for the POST operation.
-  console.log(req.body);
+  //console.log(req.body.submission._id);
 
-  // init();//todo get submitionid
+   init(req.body.submission._id);
 
   next();
 });
