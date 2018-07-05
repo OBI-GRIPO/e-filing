@@ -11,11 +11,11 @@ services:
       - 27017:27017
       - 27018:27018
       - 27019:27019
-              
+     
   formio-api:
     ports:
       - 3001:3001
- 
+
   bonita:
     ports:
       - 9090:8080
@@ -27,7 +27,7 @@ services:
       - 10000:8080
     deploy:
       replicas: 1
-      
+
   node:
     ports:
       - 10631:10631
@@ -48,11 +48,16 @@ services:
     ports:
       - 8081:8080
 
-  wordpress:
-    ports:
+  https-portal:
+      ports:
       - 80:80
       - 443:443
-      
+
+  wordpress:
+    ports:
+      - 7080:80
+      - 7443:443
+
   mysql:
     ports:
       - 3306:3306

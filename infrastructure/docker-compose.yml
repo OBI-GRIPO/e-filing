@@ -364,15 +364,20 @@ services:
         done
         exec /usr/local/tomcat/bin/catalina.sh run
 
+  https-portal:
+    image: steveltn/https-portal
+    ports:
+      - 80:80
+      - 443:443
+    environment:
+      - "DOMAINS=efiling.obi.gr -> http://wordpress"
+
   wordpress:
     image: wordpress
     networks:
       - obi_net
     depends_on:
       - mysql
-    ports:
-      - 80:80
-      - 443:443
     volumes:
       - wp-content:/var/www/html/wp-content
       - ${PWD}/assets/wp/setWpDefines.sh:/usr/local/bin/setWpDefines.sh
