@@ -366,12 +366,23 @@ services:
 
   https-portal:
     image: steveltn/https-portal
+    networks:
+      - obi_net
+    depends_on:
+      - mysql
     ports:
       - 80:80
       - 443:443
     environment:
       - "DOMAINS=efiling.obi.gr -> http://wordpress"
-
+    deploy:
+      replicas: 1
+      restart_policy:
+        delay: 15s
+        window: 120s
+      placement:
+        constraints: [node.role == manager]
+        
   wordpress:
     image: wordpress
     networks:
