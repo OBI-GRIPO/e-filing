@@ -8,10 +8,10 @@ var querystring = require('querystring');
 
 
 //TODO move as node module
-function init(sid){
+function init(sid,fid){
  
  function step1(){
-  console.log("on step 1 "+sid);
+  console.log("on step 1 sid="+sid+" fid="+fid);
   var bonita_post_data=querystring.stringify({
      username: config.bonita_user,
      password: config.bonita_password,
@@ -79,7 +79,7 @@ function step3(token,cookie,pid){
  	   console.log("on step 1 sid="+sid +" token="+token+" cookie="+cookie+" pid="+pid);
  
  
-  var bonita_post_data= JSON.stringify({submition_id:sid});
+  var bonita_post_data= JSON.stringify({submition_id:sid,form_id:fid});
   console.log(bonita_post_data);
   
   var bonita_post_options = {
@@ -170,9 +170,9 @@ app.use(basicAuth(config.username, config.password));
 app.post('/start/process', function(req, res, next) {
 
   // This shows all the available data for the POST operation.
-  //console.log(req.body.submission._id);
+  // console.log(req.body);
 
-   init(req.body.submission._id);
+  init(req.body.submission._id,req.body.submission.form);
 
   next();
 });
