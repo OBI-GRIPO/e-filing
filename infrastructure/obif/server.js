@@ -129,7 +129,7 @@ function step2(token,cookie){
       host: config.bonita_host,
       port: config.bonita_port,
       
-      path: '/bonita/API/bpm/process?s=ReviewFormIoSubmition',
+      path: '/bonita/API/bpm/process?s=RetrieveSubmition',
       method: 'GET',
       headers: {
 
@@ -143,6 +143,7 @@ function step2(token,cookie){
 	  res.on('data', function (chunk) {
 		  var jo = JSON.parse(chunk)
           //console.log('Response: ' + JSON.parse(chunk));
+          
           step3(token,cookie,jo[0].id);
       });
  
