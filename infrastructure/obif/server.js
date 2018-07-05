@@ -129,7 +129,7 @@ function step2(token,cookie){
       host: config.bonita_host,
       port: config.bonita_port,
       
-      path: '/bonita/API/bpm/process?s=GetSubmition',
+      path: '/bonita/API/bpm/process?s=ReviewFormIoSubmition',
       method: 'GET',
       headers: {
 
