@@ -111,6 +111,27 @@ services:
         aa=$$(/waitmongodb.sh &>/dev/null || true)        
         exec /start.sh        
 
+  fio2pdf:
+    image: skarvelis/fio2pdf:1.0
+    build:
+      context: ${PWD}/vendors/fio2pdf
+    networks:
+      - obi_net
+    extra_hosts:
+      - "{--formio_host--}: {--formio_host_ip--}"
+    environment:
+      - FORMIO_ADMIN_EMAIL={--formio_admin_email--}
+      - FORMIO_ADMIN_PASSWORD={--formio_admin_password--}
+    depends_on:
+      - formio-api
+    deploy:
+      replicas: 1
+      restart_policy:
+        delay: 25s
+        window: 120s
+      placement:
+        constraints: [node.role == manager]
+
   bonita:
     image: bonita:7.6.3
     networks:

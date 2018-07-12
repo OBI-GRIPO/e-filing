@@ -4,3 +4,6 @@
 [submodule "infrastructure/vendors/swso2"]
 	path = infrastructure/vendors/swso2
 	url = https://github.com/sl45sms/swso2.git
+[submodule "infrastructure/vendors/fio2pdf"]
+	path = infrastructure/vendors/fio2pdf
+	url = https://github.com/sl45sms/fio2pdf.git
