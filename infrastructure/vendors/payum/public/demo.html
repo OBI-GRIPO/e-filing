@@ -28,7 +28,7 @@
 
         <script>
             document.addEventListener('DOMContentLoaded', () => {
-                const payumServerUrl = location.protocol + '//' + window.location.hostname;
+                const payumServerUrl = location.protocol + '//' + window.location.hostname+':'+window.location.port;
                 const payum = new Payum(payumServerUrl);
                 const paymentId = (new URL(window.location.href)).searchParams.get("paymentId");
 

@@ -79,5 +79,5 @@ RUN php7.1 composer.phar install ; exit 0
 # updates
 RUN ./update-psl-icann-section
 
-#TODO patch alphabank
+
 ENTRYPOINT ["/entrypoint.sh"]
