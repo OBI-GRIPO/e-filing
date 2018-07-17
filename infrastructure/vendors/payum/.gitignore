@@ -1,0 +1,15 @@
+.idea
+trash
+
+###> symfony/framework-bundle ###
+.env
+.test.env
+/public/bundles/
+/var/
+/vendor/
+###< symfony/framework-bundle ###
+###> symfony/phpunit-bridge ###
+.phpunit
+/phpunit.xml
+###< symfony/phpunit-bridge ###
+docker-compose.yml

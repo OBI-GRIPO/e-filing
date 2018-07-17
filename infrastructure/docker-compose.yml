@@ -132,6 +132,47 @@ services:
       placement:
         constraints: [node.role == manager]
 
+  payum:
+    image: obi/payumserver:1.0
+    build:
+      context: ${PWD}/vendors/payum
+    networks:
+      - obi_net
+    extra_hosts:
+      - "{--formio_host--}: {--formio_host_ip--}"
+    environment:
+      - PAYUM_MONGO_URI=mongodb://mongodb:27017/payum_server
+      - PAYUM_DEBUG=0
+    depends_on:
+      - mongodb
+    deploy:
+      replicas: 1
+      restart_policy:
+        delay: 25s
+        window: 120s
+      placement:
+        constraints: [node.role == manager]
+    entrypoint:
+      - bash
+      - -c
+      - |
+        set -e
+        echo 'Waiting for MongoDB to be available'
+        aa=$$(/waitmongodb.sh &>/dev/null || true)      
+        exec /entrypoint.sh
+    
+  payumui:
+    image: payum/server-ui
+    depends_on:
+      - payum
+    deploy:
+      replicas: 1
+      restart_policy:
+        delay: 25s
+        window: 120s
+      placement:
+        constraints: [node.role == manager] 
+        
   bonita:
     image: bonita:7.6.3
     networks:

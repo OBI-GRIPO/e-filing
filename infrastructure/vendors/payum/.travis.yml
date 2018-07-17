@@ -1,0 +1,31 @@
+language: php
+
+php:
+  - 7.1
+
+cache:
+  directories:
+    - $HOME/.composer
+
+services:
+  - mongodb
+  - docker
+
+before_install:
+    - echo "extension = mongodb.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+    - cp .test.env.dist .test.env
+
+install:
+    - composer install
+
+script:
+    - bin/phpunit
+
+after_success:
+  - rm -rf vendor
+  - composer install --optimize-autoloader --classmap-authoritative --no-dev --no-suggest --prefer-dist
+  - BRANCH=$TRAVIS_BRANCH COMMIT=${TRAVIS_COMMIT::8} bin/build-docker-image
+
+notifications:
+  email:
+    - payumsupport@forma-pro.com

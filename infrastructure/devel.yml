@@ -15,7 +15,19 @@ services:
   formio-api:
     ports:
       - 3001:3001
+      
+  fio2pdf:
+    ports:
+      - 6112:6112
 
+  payum:
+    ports:
+      - 16567:80
+      
+  payumui:
+    ports:
+      - 16568:80        
+            
   bonita:
     ports:
       - 9090:8080

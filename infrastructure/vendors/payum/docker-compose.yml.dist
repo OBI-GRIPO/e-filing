@@ -1,0 +1,21 @@
+version: '2'
+services:
+  payum-server:
+    image: skarvelis/payum:1.0
+    environment:
+      - PAYUM_MONGO_URI=mongodb://mongo:27017/payum_server
+      - PAYUM_DEBUG=1
+    links:
+      - mongo
+    ports:
+      - "80:80"
+
+  payum-server-ui:
+    image: payum/server-ui
+    ports:
+      - "28081:80"
+
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
