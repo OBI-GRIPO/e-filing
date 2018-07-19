@@ -7,18 +7,13 @@ var config = require('./config.json');
 var querystring = require('querystring');
 
 
-//TODO move as node module
-function init(sid,fid){
- 
- function step1(){
-  console.log("on step 1 sid="+sid+" fid="+fid);
-  var bonita_post_data=querystring.stringify({
+function getToken() {
+    var bonita_post_data=querystring.stringify({
      username: config.bonita_user,
      password: config.bonita_password,
      redirect: false
    });
-     
-  var bonita_post_options = {
+    var bonita_post_options = {
       host: config.bonita_host,
       port: config.bonita_port,
       path: '/bonita/loginservice',
@@ -27,132 +22,101 @@ function init(sid,fid){
           'Content-Type': 'application/x-www-form-urlencoded',
           'Content-Length': Buffer.byteLength(bonita_post_data)
       }
-  };
+    };
 
+  return new Promise(function(resolve, reject){
   // Set up the request
   var post_req = http.request(bonita_post_options, function(res) {
 	var setcookie = res.headers["set-cookie"];
-    if ( setcookie ) {
-				
+    if ( setcookie ) {	
       setcookie.forEach(
-        function ( cookiestr ) {
-			console.log(cookiestr);
-			
-		   
+        function ( cookiestr ) {  
            if (cookiestr.startsWith('X-Bonita-API-Token'))  {
-			   
-			   
-              const regex = /^X-Bonita-API-Token=(\S{8}-\S{4}-\S{4}-\S{4}-\S{12});\sPath=\/bonita$/gm;
+              const regex = /^X-Bonita-API-Token=(\S{8}-\S{4}-\S{4}-\S{4}-\S{12});\sPath=(\/|\/bonita)$/gm;
                let m;
               while ((m = regex.exec(cookiestr)) !== null) {
                  // This is necessary to avoid infinite loops with zero-width matches
                 if (m.index === regex.lastIndex) {
                     regex.lastIndex++;
-                     }
-                      
-                      
-                     console.log("go to step 2");                       
-                     //call start process
-                     step2(m[1],setcookie); //F@Bonita you need JSESSION id also....                     
-                     
+                    }
+                     //m[1] holds token, setcookie have all cookies 
+                     resolve([m[1],setcookie])//F@Bonita you need JSESSION id also....
                      }
 	       }
         }
       );
     }
   });
-
 post_req.on('error', function(e) {
   console.log('problem with request: ' + e.message);
+  reject(e);
 });
-
 
 // post the data
 post_req.write(bonita_post_data);
 post_req.end();
+})
 }
- 
- 
-//Start process with submition data
-//TODO set submition id 
-function step3(token,cookie,pid){
- 	   console.log("on step 1 sid="+sid +" token="+token+" cookie="+cookie+" pid="+pid);
- 
- 
-  var bonita_post_data= JSON.stringify({submition_id:sid,form_id:fid});
+
+function getProcessIDbyName(processName,token,cookies){
+    var bonita_post_options = {
+        host: config.bonita_host,
+        port: config.bonita_port,
+        path: '/bonita/API/bpm/process?s='+processName,
+        method: 'GET',
+        headers: {
+           'Cookie': cookies,
+           'X-Bonita-API-Token': token,
+          }
+       };
+  return new Promise(function(resolve, reject){
+   http.get(bonita_post_options,(get_req)=>{
+	  get_req.on('data', function (chunk) {
+		  var jo = JSON.parse(chunk)         
+          resolve(jo[0].id);
+          });
+	   get_req.on('error', function(e) {
+          console.log('problem with request: ' + e.message);
+          reject(e);
+          });
+	     });	
+     });
+}
+
+function startProcessWithData(token,cookies,pid,body){ 
+  var bonita_post_data= JSON.stringify(body);
   console.log(bonita_post_data);
-  
   var bonita_post_options = {
       host: config.bonita_host,
-      port: config.bonita_port,
-      
+      port: config.bonita_port,    
       path: '/bonita/API/bpm/process/'+pid+'/instantiation',
       method: 'POST',
       headers: {
-
-          'Cookie': cookie,
+          'Cookie': cookies,
           'X-Bonita-API-Token': token,
           'Content-Type': 'application/json',
           'Content-Length': Buffer.byteLength(bonita_post_data,'utf8')
       }
   };
-
+  return new Promise(function(resolve, reject){
   // Set up the request
   var post_req = http.request(bonita_post_options, function(res) {
     res.setEncoding('utf8');
       res.on('data', function (chunk) {
-          console.log('Response: ' + chunk);
+          resolve(chunk);
       });
       res.on('end', function () {
          // console.log(res);
       });
-      
    });
-   
    post_req.on('error', function(e) {
          console.log('problem with request: ' + e.message);
-   });
-      
+         reject(e);
+   });      
    // post the data
   post_req.write(bonita_post_data);
   post_req.end();
- 	
-} 
- 
-//Get Id of process By name
-//TODO make sure you get the latest 
-function step2(token,cookie){
-	
-	   console.log("on step 1 sid="+sid +" token="+token+" cookie="+cookie);
-	
-  var bonita_post_options = {
-      host: config.bonita_host,
-      port: config.bonita_port,
-      
-      path: '/bonita/API/bpm/process?s=RetrieveSubmition',
-      method: 'GET',
-      headers: {
-
-          'Cookie': cookie,
-          'X-Bonita-API-Token': token,
-      }
-  };
-
- http.get(bonita_post_options,(res)=>{
-	 
-	  res.on('data', function (chunk) {
-		  var jo = JSON.parse(chunk)
-          //console.log('Response: ' + JSON.parse(chunk));
-          
-          step3(token,cookie,jo[0].id);
-      });
- 
  });
-
-}
-
-
- step1();
 }
 
 // Create our application.
@@ -167,15 +131,49 @@ app.use(methodOverride('X-HTTP-Method-Override'));
 app.use(basicAuth(config.username, config.password));
 
 // Handle the requests.
+app.post('/start/retrievesubmition', function(req, res) {
+    getToken().then(function(tokenData){
+	   var token=tokenData[0];
+	   var cookies=tokenData[1];
+	   getProcessIDbyName("RetrieveSubmition",token,cookies).then(function(pid){
+	   var body={
+		    submission_id:req.body.submission._id,
+		    form_id:req.body.submission.form
+	      }
+	      startProcessWithData(token,cookies,pid,body).then(function(result){	   
+		  res.send(result);
+	    });
+	   }, function(err) {
+           console.log(err);
+           res.send(err);
+        });
+	  }, function(err) {
+        console.log(err);
+        res.send(err);
+      })
+});
 
-app.post('/start/process', function(req, res, next) {
-
-  // This shows all the available data for the POST operation.
-  // console.log(req.body);
-
-  init(req.body.submission._id,req.body.submission.form);
-
-  next();
+app.post('/send/payment', function(req, res) {
+  getToken().then(function(tokenData){
+	   var token=tokenData[0];
+	   var cookies=tokenData[1];
+	   getProcessIDbyName("SubmissionPayment",token,cookies).then(function(pid){
+	   var body={
+		    submission_id:req.body.submission._id,
+		    form_id:req.body.submission.form,
+		    payment_id:req.body.payment.id
+	      }
+	      startProcessWithData(token,cookies,pid,body).then(function(result){	   
+		  res.send(result);   
+	    });
+	   }, function(err) {
+           console.log(err);
+           res.send(err);
+        });
+	  }, function(err) {
+        console.log(err);
+        res.send(err);
+      })
 });
 
 console.log('Listening to port ' + config.port);
