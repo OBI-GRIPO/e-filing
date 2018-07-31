@@ -85,7 +85,6 @@ function getProcessIDbyName(processName,token,cookies){
 
 function startProcessWithData(token,cookies,pid,body){ 
   var bonita_post_data= JSON.stringify(body);
-  console.log(bonita_post_data);
   var bonita_post_options = {
       host: config.bonita_host,
       port: config.bonita_port,    
@@ -135,7 +134,7 @@ app.post('/start/retrievesubmition', function(req, res) {
     getToken().then(function(tokenData){
 	   var token=tokenData[0];
 	   var cookies=tokenData[1];
-	   getProcessIDbyName("RetrieveSubmition",token,cookies).then(function(pid){
+	   getProcessIDbyName("RetrieveSubmission",token,cookies).then(function(pid){
 	   var body={
 		    submission_id:req.body.submission._id,
 		    form_id:req.body.submission.form
@@ -175,6 +174,76 @@ app.post('/send/payment', function(req, res) {
         res.send(err);
       })
 });
+
+app.post('/send/finalpayment', function(req, res) {
+  getToken().then(function(tokenData){
+	   var token=tokenData[0];
+	   var cookies=tokenData[1];
+	   getProcessIDbyName("FinalPayment",token,cookies).then(function(pid){
+	   var body={
+		    submission_id:req.body.submission._id,
+		    form_id:req.body.submission.form,
+		    payment_id:req.body.payment.id
+	      }
+	      startProcessWithData(token,cookies,pid,body).then(function(result){	   
+		  res.send(result);   
+	    });
+	   }, function(err) {
+           console.log(err);
+           res.send(err);
+        });
+	  }, function(err) {
+        console.log(err);
+        res.send(err);
+      })
+});
+
+/*For development*/
+app.post('/start/foldercreation', function(req, res) {
+    getToken().then(function(tokenData){
+	   var token=tokenData[0];
+	   var cookies=tokenData[1];
+	   getProcessIDbyName("FoldersCreation",token,cookies).then(function(pid){
+	   var body={
+		    submission_id:req.body.submission._id,
+		    form_id:req.body.submission.form
+	      }
+	      startProcessWithData(token,cookies,pid,body).then(function(result){	   
+		  res.send(result);
+	    });
+	   }, function(err) {
+           console.log(err);
+           res.send(err);
+        });
+	  }, function(err) {
+        console.log(err);
+        res.send(err);
+      })
+});
+
+app.post('/start/aplicantaprove', function(req, res) {
+    getToken().then(function(tokenData){
+	   var token=tokenData[0];
+	   var cookies=tokenData[1];
+	   getProcessIDbyName("AplicantAprove",token,cookies).then(function(pid){
+	   var body={
+		    submission_id:req.body.submission._id,
+		    form_id:req.body.submission.form,
+		    aplicant_Email:req.body.aplicant.email
+	      }
+	      startProcessWithData(token,cookies,pid,body).then(function(result){	   
+		  res.send(result);
+	    });
+	   }, function(err) {
+           console.log(err);
+           res.send(err);
+        });
+	  }, function(err) {
+        console.log(err);
+        res.send(err);
+      })
+});
+
 
 console.log('Listening to port ' + config.port);
 app.listen(config.port);
