@@ -21,6 +21,8 @@ volumes:
     driver: local
   alfresco-sorl-data:
     driver: local
+  ssl-certs:
+    driver: local
   wp-content:
     driver: local
   mysql-data:
@@ -84,7 +86,9 @@ services:
     extra_hosts:
       - "{--formio_host--}: {--formio_host_ip--}"
     environment:
+      - VIRTUAL_PROTOCOL=http
       - VIRTUAL_HOST=formio-api
+      - VIRTUAL_PORT=3001
       - DB_HOST=mongodb
       - DB_NAME=formio
       - ADMIN_EMAIL={--formio_admin_email--}
@@ -145,6 +149,9 @@ services:
       - PAYUM_DEBUG=0
     depends_on:
       - mongodb
+    volumes:
+      - ${PWD}/assets/payum/public:/payum/public
+      - ${PWD}/assets/payum/.env:/payum/.env
     deploy:
       replicas: 1
       restart_policy:
@@ -435,8 +442,13 @@ services:
     ports:
       - 80:80
       - 443:443
+    volumes:
+      - ssl-certs:/var/lib/https-portal
+      - ${PWD}/assets/wp/http_config:/var/lib/nginx-conf/efiling.obi.gr.conf.erb:ro
+      - ${PWD}/assets/wp/https_config:/var/lib/nginx-conf/efiling.obi.gr.ssl.conf.erb:ro
     environment:
-      - "DOMAINS=efiling.obi.gr -> http://wordpress"
+      DOMAINS: 'efiling.obi.gr -> http://wordpress'
+      STAGE: 'production'
     deploy:
       replicas: 1
       restart_policy:
