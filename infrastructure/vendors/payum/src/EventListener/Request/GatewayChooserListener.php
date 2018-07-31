@@ -78,11 +78,18 @@ class GatewayChooserListener implements EventSubscriberInterface
      */
     public function chooseGateway(FilterControllerEvent $event) : void
     {
+		
+		
+
+		
         $controller = isset($event->getController()[0]) ? $event->getController()[0] : null;
 
         if (!($controller instanceof GatewayChooserInterface)) {
+								
             return;
         }
+
+
 
         /** @var PaymentToken $token */
         $token = $this->payum->getHttpRequestVerifier()->verify($this->request);
@@ -91,6 +98,10 @@ class GatewayChooserListener implements EventSubscriberInterface
         $payment = $paymentStorage->findById($token->getDetails()->getId());
 
         if (false == $payment->getGatewayName()) {
+			
+
+
+			
             $form = $this->formFactory->createNamed('', ChooseGatewayType::class, $payment, [
                 'action' => $token->getTargetUrl(),
             ]);

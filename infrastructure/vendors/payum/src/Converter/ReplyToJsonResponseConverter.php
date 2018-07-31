@@ -64,6 +64,8 @@ class ReplyToJsonResponseConverter
 
     protected function preparePostRedirectContent(HttpPostRedirect $reply) : string
     {
+		
+
         $formInputs = '';
         foreach ($reply->getFields() as $name => $value) {
             $formInputs .= sprintf(

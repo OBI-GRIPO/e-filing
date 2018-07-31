@@ -13,7 +13,7 @@ class JsonOutputExceptionListener
         if ('OPTIONS' === $event->getRequest()->getMethod()) {
             return null;
         }
-
+        
         if ('json' !== $event->getRequest()->getContentType()
             && 'application/vnd.payum+json' !== $event->getRequest()->headers->get('Accept')
         ) {

@@ -39,6 +39,9 @@ class CapturePaymentAction implements ActionInterface, GatewayAwareInterface
                 $this->gateway->execute($convert = new Convert($payment, 'array', $request->getToken()));
                 $payment->setDetails($convert->getResult());
             } catch (RequestNotSupportedException $e) {
+				        			
+		  
+				
                 $payumPayment = new PayumPayment();
                 $payumPayment->setNumber($payment->getNumber());
                 $payumPayment->setTotalAmount($payment->getTotalAmount());
@@ -50,7 +53,10 @@ class CapturePaymentAction implements ActionInterface, GatewayAwareInterface
                 $payumPayment->setDetails($payment->getDetails());
 
                 $this->gateway->execute($convert = new Convert($payumPayment, 'array', $request->getToken()));
+                	
                 $payment->setDetails($convert->getResult());
+            
+            
             }
         }
 
@@ -61,6 +67,7 @@ class CapturePaymentAction implements ActionInterface, GatewayAwareInterface
             $this->gateway->execute($request);
         } finally {
             $payment->setDetails((array) $details);
+            
         }
     }
 

@@ -70,6 +70,7 @@ class GatewayController
      */
     public function createAction(Request $request) : JsonResponse
     {
+
         $this->forward400Unless('json' == $request->getContentType());
 
         try {
@@ -144,6 +145,7 @@ class GatewayController
 
     protected function findGatewayConfigByName(string $name) : GatewayConfigInterface
     {
+	
         if (false == $name) {
             throw new NotFoundHttpException(sprintf('Config name is empty.', $name));
         }

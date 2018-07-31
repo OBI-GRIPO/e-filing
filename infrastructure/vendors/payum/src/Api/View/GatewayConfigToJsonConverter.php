@@ -10,6 +10,8 @@ class GatewayConfigToJsonConverter
 {
     public function convert(GatewayConfigInterface $gatewayConfig) : array
     {
+		
+
         $config = [];
         foreach ($gatewayConfig->getConfig() as $name => $value) {
             $config[$name] = Mask::mask($value, '*');
