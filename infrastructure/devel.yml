@@ -15,6 +15,7 @@ services:
       - 16567:80
     volumes:
       - ${PWD}/vendors/payum/src:/payum/src
+      - ${PWD}/vendors/payum/config:/payum/config
         
   payumui:
     ports:

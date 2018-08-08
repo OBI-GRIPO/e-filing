@@ -72,8 +72,13 @@ function getProcessIDbyName(processName,token,cookies){
   return new Promise(function(resolve, reject){
    http.get(bonita_post_options,(get_req)=>{
 	  get_req.on('data', function (chunk) {
+		  
 		  var jo = JSON.parse(chunk)         
-          resolve(jo[0].id);
+           if (typeof jo !== 'undefined' && jo.length > 0) {
+               resolve(jo[0].id);
+            }
+           else reject({error:"no process",process_name:processName});
+           
           });
 	   get_req.on('error', function(e) {
           console.log('problem with request: ' + e.message);
@@ -243,6 +248,65 @@ app.post('/start/aplicantaprove', function(req, res) {
         res.send(err);
       })
 });
+
+
+// Handle the requests for registration.
+app.post('/user/registration', function(req, res) {
+    getToken().then(function(tokenData){
+	   var token=tokenData[0];
+	   var cookies=tokenData[1];
+
+	   getProcessIDbyName("efilingVerificationEmails",token,cookies).then(function(pid){
+		console.log(req.body.submission.data.gsis.plain);    
+	   var body={
+		    submission_id:req.body.submission._id,
+		    form_id:req.body.submission.form,
+		    plain:req.body.submission.data.gsis.plain
+	      }
+	      startProcessWithData(token,cookies,pid,body).then(function(result){	   
+		  res.send(result);
+	    });
+	   }, function(err) {
+           console.log(err);
+           res.send(err);
+        });
+        
+        
+	  }, function(err) {
+        console.log(err);
+        res.send(err);
+      })
+
+});
+
+
+
+app.post('/user/validate/email', function(req, res) {
+    getToken().then(function(tokenData){
+	   var token=tokenData[0];
+	   var cookies=tokenData[1];
+	   getProcessIDbyName("efilingValidateEmail",token,cookies).then(function(pid){
+	   var body={
+		      submission_id:req.body.submission._id,
+		      form_id:req.body.submission.form,
+		      identification_method:req.body.submission.identification_method,
+		      email:req.body.submission.email,
+		      plain:req.body.submission.plain
+	      }
+	      startProcessWithData(token,cookies,pid,body).then(function(result){	   
+		  res.send(result);
+	    });
+	   }, function(err) {
+           console.log(err);
+           res.send(err);
+        });
+	  }, function(err) {
+        console.log(err);
+        res.send(err);
+      })
+
+});
+
 
 
 console.log('Listening to port ' + config.port);
