@@ -3,7 +3,7 @@ api_root:
     path: /
     methods: [GET]
     controller: App\Api\Controller\RootController::rootAction
-
+    
 # gateway all
 gateway_all:
     path: /gateways
@@ -52,7 +52,7 @@ payment_get:
     methods: [GET]
     defaults:
         _controller: app.api.controller.payment::getAction
-
+  
 # payments delete
 payment_delete:
     path: /payments/{id}
@@ -101,7 +101,7 @@ app.schema.controller.payments:
     methods: [GET]
     defaults:
         _controller: app.schema.controller.payments::getNewAction
-
+ 
 # schema/payments new form
 app.schema.controller.payments.form:
     path: /schema/payments/form/new.json
@@ -119,13 +119,14 @@ app.schema.controller.tokens:
 # payum bundle
 payum_all:
     resource: "@PayumBundle/Resources/config/routing/all.xml"
-
+    
 payum_capture_do:
     path: /payment/capture/{payum_token}
     defaults:
         _controller: App\Controller\CaptureController::doAction
-
+        
 payum_authorize_do:
     path: /payment/authorize/{payum_token}
     defaults:
         _controller: App\Controller\AuthorizeController::doAction
+

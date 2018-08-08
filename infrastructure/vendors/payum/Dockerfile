@@ -58,7 +58,7 @@ RUN mkdir -p /run/php && touch /run/php/php7.1-fpm.sock && touch /run/php/php7.1
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod 755 /entrypoint.sh
 
-ENV PAYUM_DEBUG 1
+ENV PAYUM_DEBUG 0
 ENV NGINX_WEB_ROOT=/payum/public
 ENV NGINX_PHP_FALLBACK=/index.php
 ENV NGINX_PHP_LOCATION='^/index\.php(/|$)'

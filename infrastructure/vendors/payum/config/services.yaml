@@ -5,6 +5,8 @@ parameters:
 
     router.request_context.host: '%env(PAYUM_SERVER_NAME)%'
     request_listener.http_port: '%env(PAYUM_NGINX_PORT)%'
+    
+
 
     vnd_routes:
         - '%payum.capture_path%'

@@ -91,7 +91,6 @@ class TokenController
                 'payum_token' => null,
                 'paymentId' => $payment->getId(),
             ]);
-
             return new JsonResponse(['token' => $this->tokenToJsonConverter->convert($token)], 201);
         }
 
