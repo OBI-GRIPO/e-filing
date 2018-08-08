@@ -1,0 +1,84 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="el">
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+        <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+        <script src="payum.js"></script>
+    </head>
+
+    <body style="margin: 20px;">
+        <div class="col-xs-offset-1 col-xs-10">
+            <div class="col-xs-offset-3">
+                <h2>PayumServer demo application</h2>
+
+                <div class="row">
+                    <p>
+                        This is pure html,js app. Click "Pay" button to pay 0.5€ (virtual).
+                    </p>
+
+                    <p id="payum-previous-payment"></p>
+
+                    <button id="pay-btn" class="btn" value="Create">Pay 0.5€</button>
+                </div>
+
+                <div id="payum-container" class="row" style="margin-top: 5.0em;"></div>
+
+            </div>
+        </div>
+
+
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const payumServerUrl = location.protocol + '//' + window.location.hostname+(window.location.port?':'+window.location.port:"")+"/payum";
+                console.log("payumServerUrl",payumServerUrl);
+                
+                //const payumServerUrl = "https://efiling.obi.gr/payum";
+                const payum = new Payum(payumServerUrl);
+                const paymentId = (new URL(window.location.href)).searchParams.get("paymentId");
+
+                document.querySelector('#pay-btn').addEventListener('click', () => {
+                     const payment = {totalAmountInput: 0.5, currencyCode: 'EUR', gatewayName: 'AlphaBankSandBox', 
+                           description: "try to use sandbox of testStripe",
+                           payer:{
+                           email: "someone@example.com",
+                           id: "cust1",
+                           firstName: "somename"
+                           },
+                           details:{
+                            // sharedSecretKey: "Cardlink1", // do not actual put this here! use backend configuration 
+                            //mid: "someothermid",
+                          //  anykeyyouwont: "withanyvalueyouwant"
+                          }
+                       };
+
+
+                    payum.payment.create(payment, (payment) => {
+						console.log("payment",payment);
+                        const token = {
+                            type: 'capture',
+                            payerEmail: payment.email,
+                            paymentId: payment.id,
+                            afterUrl: window.location.href,
+                            targetUrl: window.location.href
+                        };
+
+                        payum.token.create(token, (responseToken) => {
+							console.log("token",responseToken);
+                            payum.execute(responseToken.targetUrl, '#payum-container');
+                        });
+                    });
+                });
+
+                // show status of previous payment.
+                if (paymentId) {
+                    payum.payment.get(paymentId, (payment) => {
+                        document.querySelector('#payum-previous-payment')
+                            .insertAdjacentHTML(
+                                'afterBegin',
+                                'Previous payment ' + paymentId + ' status: ' + payment.status
+                            );
+                    });
+                }
+            });
+        </script>
+    </body>
+</html>

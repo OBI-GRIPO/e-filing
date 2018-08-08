@@ -74,6 +74,7 @@ class Payum {
      * @param {requestCallback} callback
      */
     createToken(token, callback) {
+		console.log(this.serverUrl);
         fetch(this.serverUrl + '/tokens', {
             body: JSON.stringify(token),
             method: 'POST',
