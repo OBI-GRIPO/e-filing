@@ -207,11 +207,14 @@ services:
       - postgres
     volumes:
       - bonita-volume:/opt/bonita
+      - ${PWD}/assets/bonita/certs.crt:/certs.crt
     entrypoint:
       - bash
       - -c
       - |
         set -e
+        echo 'set certs'
+        keytool -import -alias obismtp -keystore /usr/lib/jvm/java-8-openjdk-amd64/jre/lib/security/cacerts -file /certs.crt -noprompt -storepass changeit
         echo 'Waiting for Postgres to be available'
         export PGPASSWORD="$$POSTGRES_ENV_POSTGRES_PASSWORD"
         maxTries=20
