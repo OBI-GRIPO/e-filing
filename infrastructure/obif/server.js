@@ -71,15 +71,49 @@ function getProcessIDbyName(processName,token,cookies){
        };
   return new Promise(function(resolve, reject){
    http.get(bonita_post_options,(get_req)=>{
+	  let data = ''; 
 	  get_req.on('data', function (chunk) {
-		  
-		  var jo = JSON.parse(chunk)         
+		   data += chunk;
+          });     
+      get_req.on('end', function() {    
+          var jo = JSON.parse(data);
            if (typeof jo !== 'undefined' && jo.length > 0) {
                resolve(jo[0].id);
             }
            else reject({error:"no process",process_name:processName});
-           
+          }); 
+	  get_req.on('error', function(e) {
+          console.log('problem with request: ' + e.message);
+          reject(e);
           });
+	     });	
+     });
+}
+/**********************************************************************/
+function getActivityStateByProcessId(processInstanceId,token,cookies){
+    var bonita_post_options = {
+        host: config.bonita_host,
+        port: config.bonita_port,
+        path: '/bonita/API/bpm/activity?p=0&c=10&f=parentCaseId%3d'+processInstanceId,//Wait For Aprove
+        method: 'GET',
+        headers: {
+           'Cookie': cookies,
+           'X-Bonita-API-Token': token,
+          }
+       };
+  return new Promise(function(resolve, reject){
+   http.get(bonita_post_options,(get_req)=>{
+	   let data = '';
+	  get_req.on('data', function (chunk) {
+		  	 data += chunk;	  
+          });
+           get_req.on('end', function() {
+		   var jo = JSON.parse(data)         
+           if (typeof jo !== 'undefined' && jo.length > 0) {
+               resolve(jo[0].state);
+            }
+              else reject({error:"no activity",processInstanceId:processInstanceId});
+            });
 	   get_req.on('error', function(e) {
           console.log('problem with request: ' + e.message);
           reject(e);
@@ -87,6 +121,7 @@ function getProcessIDbyName(processName,token,cookies){
 	     });	
      });
 }
+
 
 function startProcessWithData(token,cookies,pid,body){ 
   var bonita_post_data= JSON.stringify(body);
@@ -102,6 +137,7 @@ function startProcessWithData(token,cookies,pid,body){
           'Content-Length': Buffer.byteLength(bonita_post_data,'utf8')
       }
   };
+  console.log("Start process with pid:"+pid+" with data: "+bonita_post_data);
   return new Promise(function(resolve, reject){
   // Set up the request
   var post_req = http.request(bonita_post_options, function(res) {
@@ -134,7 +170,7 @@ app.use(methodOverride('X-HTTP-Method-Override'));
 // Add Basic authentication to our API.
 app.use(basicAuth(config.username, config.password));
 
-// Handle the requests.
+// Handle the request to start submission review.
 app.post('/start/retrievesubmition', function(req, res) {
     getToken().then(function(tokenData){
 	   var token=tokenData[0];
@@ -157,6 +193,7 @@ app.post('/start/retrievesubmition', function(req, res) {
       })
 });
 
+//The aplication payment is complete
 app.post('/send/payment', function(req, res) {
   getToken().then(function(tokenData){
 	   var token=tokenData[0];
@@ -180,6 +217,7 @@ app.post('/send/payment', function(req, res) {
       })
 });
 
+//The payment is complete
 app.post('/send/finalpayment', function(req, res) {
   getToken().then(function(tokenData){
 	   var token=tokenData[0];
@@ -203,29 +241,7 @@ app.post('/send/finalpayment', function(req, res) {
       })
 });
 
-/*For development*/
-app.post('/start/foldercreation', function(req, res) {
-    getToken().then(function(tokenData){
-	   var token=tokenData[0];
-	   var cookies=tokenData[1];
-	   getProcessIDbyName("FoldersCreation",token,cookies).then(function(pid){
-	   var body={
-		    submission_id:req.body.submission._id,
-		    form_id:req.body.submission.form
-	      }
-	      startProcessWithData(token,cookies,pid,body).then(function(result){	   
-		  res.send(result);
-	    });
-	   }, function(err) {
-           console.log(err);
-           res.send(err);
-        });
-	  }, function(err) {
-        console.log(err);
-        res.send(err);
-      })
-});
-
+//aplicant aproves the submission 
 app.post('/start/aplicantaprove', function(req, res) {
     getToken().then(function(tokenData){
 	   var token=tokenData[0];
@@ -249,6 +265,22 @@ app.post('/start/aplicantaprove', function(req, res) {
       })
 });
 
+//aplicant already have aprove the submission 
+app.get('/check/aplicantcanaprove', function(req, res) {
+    getToken().then(function(tokenData){
+	   var token=tokenData[0];
+	   var cookies=tokenData[1];
+	    getActivityStateByProcessId(req.query.processInstanceId,token,cookies).then(function(state){
+	     res.send(state);
+	    }, function(err) {
+           console.log(err);
+           res.send(err);
+        });
+	  }, function(err) {
+        console.log(err);
+        res.send(err);
+      })
+});
 
 // Handle the requests for registration.
 app.post('/user/registration', function(req, res) {
@@ -256,8 +288,7 @@ app.post('/user/registration', function(req, res) {
 	   var token=tokenData[0];
 	   var cookies=tokenData[1];
 
-	   getProcessIDbyName("efilingVerificationEmails",token,cookies).then(function(pid){
-		console.log(req.body.submission.data.gsis.plain);    
+	   getProcessIDbyName("efilingVerificationEmails",token,cookies).then(function(pid){   
 	   var body={
 		    submission_id:req.body.submission._id,
 		    form_id:req.body.submission.form,
@@ -279,8 +310,7 @@ app.post('/user/registration', function(req, res) {
 
 });
 
-
-
+//handle email validation
 app.post('/user/validate/email', function(req, res) {
     getToken().then(function(tokenData){
 	   var token=tokenData[0];
@@ -305,6 +335,52 @@ app.post('/user/validate/email', function(req, res) {
         res.send(err);
       })
 
+});
+
+
+/*For development*/
+app.post('/start/foldercreation', function(req, res) {
+    getToken().then(function(tokenData){
+	   var token=tokenData[0];
+	   var cookies=tokenData[1];
+	   getProcessIDbyName("FoldersCreation",token,cookies).then(function(pid){
+	   var body={
+		    submission_id:req.body.submission._id,
+		    form_id:req.body.submission.form
+	      }
+	      startProcessWithData(token,cookies,pid,body).then(function(result){	   
+		  res.send(result);
+	    });
+	   }, function(err) {
+           console.log(err);
+           res.send(err);
+        });
+	  }, function(err) {
+        console.log(err);
+        res.send(err);
+      })
+});
+
+app.post('/start/uploadfilestoprotocol', function(req, res) {
+    getToken().then(function(tokenData){
+	   var token=tokenData[0];
+	   var cookies=tokenData[1];
+	   getProcessIDbyName("UploadFilesToProtocol",token,cookies).then(function(pid){
+	   var body={
+		    submission_id:req.body.submission._id,
+		    form_id:req.body.submission.form
+	      }
+	      startProcessWithData(token,cookies,pid,body).then(function(result){	   
+		  res.send(result);
+	    });
+	   }, function(err) {
+           console.log(err);
+           res.send(err);
+        });
+	  }, function(err) {
+        console.log(err);
+        res.send(err);
+      })
 });
 
 
