@@ -1,6 +1,10 @@
 version: '3.6'
 
 volumes:
+  jasper-data:
+   driver: local
+  jasper-db:
+   driver: local
   mongo-volume:
     driver: local
   formio-volume:
@@ -128,6 +132,33 @@ services:
       - FORMIO_ADMIN_PASSWORD={--formio_admin_password--}
     depends_on:
       - formio-api
+    deploy:
+      replicas: 1
+      restart_policy:
+        delay: 25s
+        window: 120s
+      placement:
+        constraints: [node.role == manager]
+ 
+  reports:
+    image: bitnami/jasperreports:7
+    networks:
+      - obi_net
+    ports:
+      - '8281:8080'
+      - '8243:8443'
+      - "8282:8181"
+    environment:
+      - MARIADB_HOST=reportsdb
+      - MARIADB_PORT_NUMBER=3306
+      - JASPERREPORTS_DATABASE_USER=bn_jasperreports
+      - JASPERREPORTS_DATABASE_NAME=bitnami_jasperreports
+      - ALLOW_EMPTY_PASSWORD=yes
+    depends_on:
+      - mongodb
+      - reportsdb
+    volumes:
+      - jasper-data:/bitnami
     deploy:
       replicas: 1
       restart_policy:
@@ -486,9 +517,27 @@ services:
     networks:
       - obi_net
     volumes:
-      - mysql-data:/var/lib/mysql    
+      - mysql-data:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: {--mysql_password--}
+    deploy:
+      replicas: 1
+      restart_policy:
+        delay: 15s
+        window: 120s
+      placement:
+        constraints: [node.role == manager]
+
+  reportsdb:
+    image: bitnami/mariadb:10.3
+    networks:
+      - obi_net
+    volumes:
+      - /media/hdd2/obi_jasper-db:/bitnami
+    environment:
+      - MARIADB_USER=bn_jasperreports
+      - MARIADB_DATABASE=bitnami_jasperreports
+      - ALLOW_EMPTY_PASSWORD=yes
     deploy:
       replicas: 1
       restart_policy:
