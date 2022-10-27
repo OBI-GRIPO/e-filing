@@ -1,0 +1,1 @@
+Hoops Shortcodes are managed in WordPress Administration under Tools > Scripts n Styles > Hoops

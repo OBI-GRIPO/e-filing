@@ -1,0 +1,34 @@
+#: obi.php
+
+#on Header
+msgid "Home"
+msgstr "Αρχική"
+
+msgid "Connect"
+msgstr "Συνδεθήκατε με"
+
+msgid "Applications"
+msgstr "Αιτήσεις"
+
+msgid "Help"
+msgstr "Οδηγίες"
+
+msgid "OBI"
+msgstr "ΟΒΙ"
+
+msgid "Submissions"
+msgstr "Υποβληθείσες Αιτήσεις"
+
+msgid "Logout"
+msgstr "Έξοδος"
+
+msgid "Electronic submission of applications"
+msgstr "Ηλεκτρονική υποβολή αιτήσεων "
+
+msgid "Submit forms easyly"
+msgstr "Ευκολή αποστολή"
+
+#on footer
+
+msgid "Back to top"
+msgstr "Επιστροφή"

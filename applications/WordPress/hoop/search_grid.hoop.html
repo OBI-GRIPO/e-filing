@@ -1,0 +1,68 @@
+<div id="filters" class="form-group">
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="input-group">
+                <input type="text" class="form-control" id="caseId" placeholder="Αναζητήστε τον αριθμό υπόθεσης με την μορφή xx-xxxxxxx παράδειγμα 20-0000012345">  
+          <span class="input-group-btn">
+            <button id="searchCaseId" class="btn btn-primary" type="button">Αναζήτηση</button>
+          </span>
+        </div>
+      </div>
+    </div>
+    </div>
+    
+    <script>
+    $( document ).ready(function() {
+        
+    function add_caseId(caseId){
+        var hash       = {};
+        var parser     = document.createElement('a');
+        parser.href    = location.href;
+        var parameters = parser.search.split(/\?|&/);
+    
+        for(var i=0; i < parameters.length; i++) {
+            if(!parameters[i])
+                continue;
+    
+            var ary      = parameters[i].split('=');
+            hash[ary[0]] = ary[1];
+        }
+    
+        hash["caseId"] = caseId;
+    
+        var list = [];  
+        Object.keys(hash).forEach(function (key) {
+            list.push(key + '=' + hash[key]);
+        });
+    
+        parser.search = '?' + list.join('&');
+        return parser.href;
+    }	
+        
+        
+        
+    function getCaseId() {
+        var url = window.location.href;
+        
+        var regex = new RegExp('[?&]' + "caseId" + '(=([^&#]*)|&|#|$)'),
+            results = regex.exec(url);
+        if (!results) return null;
+        if (!results[2]) return '';
+        return decodeURIComponent(results[2].replace(/\+/g, ' '));
+    }
+        
+        var isCaseId= /^[0-9]{2}-[0-9]{10}$/
+        
+    var caseId= getCaseId();
+    if (caseId!==null){
+            if(isCaseId.test(caseId)) $("#caseId").val(caseId);
+        }
+    
+    $( "#searchCaseId" ).click(function() {
+    var caseId= $("#caseId").val();	
+       if (caseId!=null&&caseId!=""&&isCaseId.test(caseId)) location.href = add_caseId(caseId);
+       else location.href=location.protocol + '//' + location.host + location.pathname;
+    });
+        
+    });
+    </script>

@@ -1,0 +1,11 @@
+.fixed-top {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    z-index: 1030;
+    background: white;
+    width: 970px;
+    margin: 0 auto;
+    padding: 20px;
+}

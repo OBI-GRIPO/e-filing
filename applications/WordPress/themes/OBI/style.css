@@ -1,0 +1,376 @@
+/*
+Theme Name: Obi Theme
+Theme URI: https://efiling.obi.gr
+Author: Panagiotis Skarvelis
+Description: A custom theme using the Bootstrap framework.
+Version: 1.0
+Text Domain: obi
+*/
+/*
+ * Globals
+ */
+a:visited {
+    color: nanyblue;
+}
+.userHide{
+  /* display: none;*/
+}
+
+/*FORM*/
+#formio .no-header ul.list-group-striped li.list-group-header{
+display:none;
+}
+
+#formio .no-header ul.list-group-striped li.list-group-item .row .col-md-2{
+display:none;
+}
+
+#formio .formio-component-datetime .flatpickr-input {
+direction:rtl!important;
+}
+
+.alignleft {
+float:left;
+}
+
+.alignright {
+float:right;
+}
+
+body {
+    background-image: linear-gradient(top, rgba(43, 43, 43, 0.0664063) 0px, rgba(43, 43, 43, 0.0664063) 500px), url(images/page_bg.png), linear-gradient(top, #303030 0px, #303030 500px), none;
+    background-image: -webkit-linear-gradient(top, rgba(43, 43, 43, 0.0664063) 0px, rgba(43, 43, 43, 0.0664063) 500px), url(images/page_bg.png), -webkit-linear-gradient(top, #303030 0px, #303030 500px), none;
+    background-image: -o-linear-gradient(top, rgba(43, 43, 43, 0.0664063) 0px, rgba(43, 43, 43, 0.0664063) 500px), url(images/page_bg.png), -o-linear-gradient(top, #303030 0px, #303030 500px), none;
+    background-image: -ms-linear-gradient(top, rgba(43, 43, 43, 0.0664063) 0px, rgba(43, 43, 43, 0.0664063) 500px), url(images/page_bg.png), -ms-linear-gradient(top, #303030 0px, #303030 500px), none;
+    background-image: -moz-linear-gradient(top, rgba(43, 43, 43, 0.0664063) 0px, rgba(43, 43, 43, 0.0664063) 500px), url(images/page_bg.png), -moz-linear-gradient(top, #303030 0px, #303030 500px), none;
+    background-repeat: no-repeat, repeat, no-repeat, repeat;
+    background-position-x: 0%, 0%, 0%, 0%;
+    background-position-y: 0%, 0%, 0%, 0%;
+    background-size: 100% 500px, auto auto, 100% 500px, auto auto;
+    background-attachment: scroll, scroll, scroll, scroll;
+    background-origin: padding-box, padding-box, padding-box, padding-box;
+    background-color: #454545;
+}
+
+#flags {
+    width: 140px;
+    float: right;
+    position: relative;
+    clear: both;
+    top: -50px;
+    padding:0;
+    margin:0;
+}
+#flags a{
+float:right;
+margin-left:3px;
+}
+#flags a img {
+border: 1px solid lightgray;
+}
+
+#navbar {
+clear:both;
+}
+
+#user-details {
+color: #6f6969;
+padding-left:5px;
+}
+
+
+.blog-main-wrapper {
+background-color: white;
+}
+
+.blog-header {
+ background-image: url(images/fp_header.png);
+ background-repeat: no-repeat;
+ background-size: 100% 100%;;
+}
+
+.user-dashboard {
+    padding: 5px;
+    background-color: whitesmoke;
+}
+
+.obi_header_wrapper {
+padding: 0;
+}
+
+.obi_header_navbar {
+margin: 0;
+}
+
+@keyframes bounce {
+	0%, 100%, 20%, 50%, 80% {
+		-webkit-transform: translateY(0);
+		-ms-transform:     translateY(0);
+		transform:         translateY(0)
+	}
+	40% {
+		-webkit-transform: translateY(-30px);
+		-ms-transform:     translateY(-30px);
+		transform:         translateY(-30px)
+	}
+	60% {
+		-webkit-transform: translateY(-15px);
+		-ms-transform:     translateY(-15px);
+		transform:         translateY(-15px)
+	}
+}
+
+#bounceApplication {
+  display:block;
+  text-align: center;
+  text-transform: uppercase;
+  -webkit-animation-duration: 1s;
+  animation-duration: 1s;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+  -webkit-animation-timing-function: ease-in-out;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  -webkit-animation-iteration-count: infinite;
+  color: white;
+  z-index: 1000;
+}
+
+#bounceApplication:hover {
+  cursor: pointer;
+  animation-name: bounce;
+  -moz-animation-name: bounce;
+}
+
+.modal-lg {
+    max-width: 970px !important;
+}
+
+#rformio {
+padding:20px;
+background-color: #fefefe;
+border-radius: 25px;
+-webkit-box-shadow: 10px 10px 18px 0px rgba(0,0,0,0.41);
+-moz-box-shadow: 10px 10px 18px 0px rgba(0,0,0,0.41);
+box-shadow: 10px 10px 18px 0px rgba(0,0,0,0.41);
+}
+
+#rformio .btn {
+display:none !important;
+}
+
+
+#rformio nav {
+    overflow-x: auto;
+    overflow-y: hidden;
+    height: 70px;
+}
+
+#rformio nav ul.pagination {
+    white-space: nowrap;
+}
+
+#rformio nav ul.pagination li.page-item span.page-link{
+    float:none!important;
+}
+
+#payum-container {
+display:none;
+}
+
+.list-inline {
+margin-top:20px;
+}
+.panel {
+margin-top:20px;
+}
+
+
+h1, .h1,
+h2, .h2,
+h3, .h3,
+h4, .h4,
+h5, .h5,
+h6, .h6 {
+  margin-top: 0;
+ /* font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;*/
+  font-weight: normal;
+  color: #333;
+}
+
+
+/*
+ * Override Bootstrap's default container.
+ */
+
+@media (min-width: 1200px) {
+  .container {
+    width: 970px;
+  }
+}
+
+
+/*
+ * Masthead for nav
+ */
+
+.blog-masthead {
+
+}
+
+/* Nav links */
+.blog-nav-item {
+  position: relative;
+  display: inline-block;
+  padding: 10px;
+  font-weight: 500;
+  color: #cdddeb;
+}
+.blog-nav-item:hover,
+.blog-nav-item:focus {
+  color: #fff;
+  text-decoration: none;
+}
+
+/* Active state gets a caret at the bottom */
+.blog-nav .active {
+  color: #fff;
+}
+.blog-nav .active:after {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 0;
+  margin-left: -5px;
+  vertical-align: middle;
+  content: " ";
+  border-right: 5px solid transparent;
+  border-bottom: 5px solid;
+  border-left: 5px solid transparent;
+}
+
+
+/*
+ * Blog name and description
+ */
+
+.blog-header {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+.blog-title {
+  color: #eee;
+}
+.blog-description {
+  font-size: 20px;
+  color: #999;
+}
+
+
+/*
+ * Main column and sidebar layout
+ */
+
+.blog-main {
+margin-top:30px;
+min-height: 631px;
+}
+
+/* Sidebar modules for boxing content */
+.sidebar-module {
+  padding: 15px;
+  margin: 0 -15px 15px;
+}
+.sidebar-module-inset {
+  padding: 15px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+}
+.sidebar-module-inset p:last-child,
+.sidebar-module-inset ul:last-child,
+.sidebar-module-inset ol:last-child {
+  margin-bottom: 0;
+}
+
+
+/* Pagination */
+.pager {
+  margin-bottom: 60px;
+  text-align: left;
+}
+.pager > li > a {
+  width: 140px;
+  padding: 10px 20px;
+  text-align: center;
+  border-radius: 30px;
+}
+
+
+/*
+ * Blog posts
+ */
+
+.blog-post {
+  margin-bottom: 60px;
+    padding: 8px
+}
+.blog-post-title {
+  margin-bottom: 5px;
+}
+
+.blog-post-meta {
+  margin-bottom: 20px;
+  color: #999;
+}
+
+
+/*
+ * Footer
+ */
+
+.blog-footer {
+  padding: 10px 0;
+  color: #999;
+  text-align: center;
+  background-color: #e0dcdc1f;
+  border-top: 1px solid #e5e5e5;
+}
+.blog-footer p:last-child {
+  margin-bottom: 0;
+}
+
+
+
+#overlay {
+    position: fixed; /* Sit on top of the page content */
+    display: block; /* Hidden by default */
+    width: 100%; /* Full width (cover the whole page) */
+    height: 100%; /* Full height (cover the whole page) */
+    top: 0; 
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0,0,0,0.5); /* Black background with opacity */
+    z-index: 2; /* Specify a stack order in case you're using a different order for other elements */
+    cursor: pointer; /* Add a pointer on hover */
+}
+
+#overlay .inner {
+
+    position: absolute;
+    top: 50%;
+    width: 130px;
+    right: 0;
+    left: 0;
+    margin: auto;
+
+}
+
+
+div.formio-component-edu_foundation_m
+div.form-control {
+overflow:hidden;
+}
+
+

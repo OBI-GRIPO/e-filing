@@ -1,0 +1,34 @@
+#: obi.php
+
+#on Header
+msgid "Home"
+msgstr ""
+
+msgid "Connect"
+msgstr ""
+
+msgid "Applications"
+msgstr ""
+
+msgid "Help"
+msgstr ""
+
+msgid "OBI"
+msgstr ""
+
+msgid "Submissions"
+msgstr ""
+
+msgid "Logout"
+msgstr ""
+
+msgid "Electronic submission of applications"
+msgstr ""
+
+msgid "Submit forms easyly"
+msgstr ""
+
+#on footer
+
+msgid "Back to top"
+msgstr ""

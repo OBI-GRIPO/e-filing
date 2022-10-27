@@ -1,0 +1,32 @@
+<span id="payinfo"></span>
+<script>
+$( document ).ready(function() {
+function getParameterByName(name, url) {
+    if (!url) url = window.location.href;
+    name = name.replace(/[\[\]]/g, '\\$&');
+    var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, ' '));
+}
+
+
+$("#btnPrint").live("click", function () {
+            var divContents = $("#payCode").html();
+            var printWindow = window.open('', '', 'height=400,width=800');
+            printWindow.document.write('<html><head><title>Αποδεικτικό Πληρωμης</title>');
+	printWindow.document.write('</head><body ><br />');
+            printWindow.document.write('Ο κωδικός συναλλαγής είναι:'+divContents+'αποθηκεύστε αυτόν τον κωδικό για αναφορά σε περίπτωση προβλήματος με την πληρωμή σας.');
+            printWindow.document.write('<br /></body></html>');
+            printWindow.document.close();
+            printWindow.print();
+        });
+	
+var payinfo=JSON.parse(atob(getParameterByName("d")));
+	
+	$("#payinfo").html("Ο κωδικός συναλλαγής είναι: <strong id='payCode'>"+payinfo.payment.id+"</strong>, αποθηκεύστε αυτόν τον κωδικό για αναφορά σε περίπτωση προβλήματος με την πληρωμή σας.<br /></br /><input type='button' value='εκτύπωση' id='btnPrint'/>"); 
+     
+	
+});
+</script>
