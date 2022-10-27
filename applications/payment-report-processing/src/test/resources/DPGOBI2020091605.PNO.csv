@@ -1,0 +1,3 @@
+"LobID";"ActorID";"RI_MID";"PaidAmount";"BkDate";"ReceivingDate";"PaymentDtTm";"Status";"ReturnCode";"ReturnAmount";"RID";"DIASReference";"TransactionID";"EndToEndID";"DebtorBankBIC";"DebtorBankCode";"DebtorName";"Service";"Channel";"Source";"RemittanceInformation"
+"OBI90772";"90772";"RF86907723100000003558700";690,00;2020-09-16;2020-09-16;2020-09-16 13:04:41;"0";;;"O224000000154323";"10017980447141";"PX202608399118";"NOT PROVIDED";"PIRBGRAAXXX";"017";"еидийос коц.йомдукиым еяеумас апх";"DCT";"9996";"OR";"RF86907723100000003558700"
+"eof";;;;;;;;;;;;;;;;;;;;
